@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>EMS Admin</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- 1. تحميل محرك Tailwind مباشرة -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 2. تعريف الـ Design الـ Extraordinaire متاعك -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          backgroundImage: {
+            'pfe-gradient': "linear-gradient(135deg, #020617 0%, #4c1d95 50%, #be123c 100%)",
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- 3. تأثير الزجاج Pro -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap');
+    
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      background: #020617;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

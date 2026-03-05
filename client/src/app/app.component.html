@@ -1,0 +1,138 @@
+<div class="min-h-screen bg-[image:var(--background-pfe-gradient)] p-4 md:p-12 text-white font-sans flex flex-col items-center">
+  
+  <div class="w-full max-w-6xl glass-card rounded-[3.5rem] p-8 md:p-12 shadow-2xl relative">
+    
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-16">
+      <div>
+        <h1 class="text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-rose-300">
+          EMS <span class="text-white/20 font-light">|</span> Admin
+        </h1>
+        <p class="text-blue-200/40 mt-2 font-bold uppercase tracking-[0.4em] text-[10px]">Gestion des Utilisateurs</p>
+      </div>
+      <button (click)="openAddModal()" class="bg-[#be123c] hover:bg-rose-500 text-white px-10 py-4 rounded-2xl font-black text-xs transition-all hover:scale-110 shadow-2xl">
+        + NOUVEAU MEMBRE
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-hidden rounded-3xl border border-white/5 bg-black/20">
+      <table class="w-full text-left border-collapse">
+        <thead class="bg-white/5 border-b border-white/10">
+          <tr class="text-rose-300 text-[10px] uppercase tracking-[0.5em] font-black">
+            <th class="p-6 text-center">Utilisateur</th>
+            <th class="p-6 text-center">Contact Email</th>
+            <th class="p-6 text-center">Mot de Passe</th>
+            <th class="p-6 text-center">Rôle</th>
+            <th class="p-6 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-white/5">
+          <tr *ngFor="let u of users()" class="hover:bg-white/[0.03] transition-all group">
+            <td class="p-6">
+              <div class="flex items-center gap-4 justify-center">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-rose-500 flex items-center justify-center font-black text-xs shadow-lg">{{u.username[0].toUpperCase()}}</div>
+                <span class="font-bold text-lg text-white/90">{{u.username}}</span>
+              </div>
+            </td>
+            <td class="p-6 text-blue-100/50 text-center">{{u.email}}</td>
+            
+            <td class="p-6 text-center">
+              <div class="flex items-center justify-center gap-3 bg-black/20 py-2 px-4 rounded-xl border border-white/5 inline-flex mx-auto min-w-[140px]">
+                <span class="font-mono text-xs text-blue-200/40 tracking-widest">
+                  {{ visiblePasswords[u.id] ? u.password : '••••••••' }}
+                </span>
+                <button (click)="togglePassword(u.id)" class="text-rose-400 hover:text-rose-300 transition-all">
+                  <span class="text-[10px] font-bold uppercase tracking-tighter">
+                    {{ visiblePasswords[u.id] ? 'Cacher' : 'Voir' }}
+                  </span>
+                </button>
+              </div>
+            </td>
+
+            <!-- Role Column Updated -->
+            <td class="p-6 text-center">
+              <span [class]="u.role === 'RESPONSABLE_ENERGIE' ? 'text-rose-400 bg-rose-400/10 border-rose-400/20' : 'text-blue-400 bg-blue-400/10 border-blue-400/20'" 
+                    class="px-4 py-1.5 rounded-lg text-[9px] font-black border uppercase tracking-widest">
+                {{ u.role === 'RESPONSABLE_ENERGIE' ? 'Responsable Énergie' : 'Utilisateur' }}
+              </span>
+            </td>
+
+            <td class="p-6 text-center">
+              <div class="flex justify-center gap-4">
+                <button (click)="openEditModal(u)" class="text-blue-400 hover:text-blue-300 font-bold text-xs uppercase tracking-widest">Modifier</button>
+                <button (click)="askDelete(u.id)" class="text-rose-500/50 hover:text-rose-400 font-bold text-xs uppercase tracking-widest">Supprimer</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MODAL (Add/Edit) -->
+    <div *ngIf="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div class="glass-card w-full max-w-md p-10 rounded-[2.5rem] border border-white/20 shadow-2xl transform transition-all scale-100">
+        <h2 class="text-3xl font-black mb-8 text-white tracking-tighter">
+          {{ isEditMode ? 'Modifier Accès' : 'Nouvel Accès' }}
+        </h2>
+        
+        <div class="space-y-6">
+          <input [(ngModel)]="userForm.username" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-rose-500 outline-none transition-all">
+          <input [(ngModel)]="userForm.email" placeholder="Email" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-rose-500 outline-none transition-all">
+          
+          <div class="relative">
+            <input [(ngModel)]="userForm.password" [type]="passwordVisible ? 'text' : 'password'" placeholder="Mot de passe" class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white focus:border-rose-500 outline-none transition-all">
+            <button (click)="passwordVisible = !passwordVisible" class="absolute right-4 top-4 text-white/30 hover:text-rose-400 text-[10px] font-bold uppercase">
+              {{ passwordVisible ? 'Cacher' : 'Voir' }}
+            </button>
+          </div>
+
+          <!-- ROLE SELECTOR CARDS (Extraordinaire Design) -->
+          <div class="pt-2">
+            <label class="block text-[10px] uppercase tracking-widest text-rose-300 mb-4 font-black">Choix du Rôle</label>
+            <div class="grid grid-cols-1 gap-3">
+              <!-- Utilisateur Card -->
+              <div (click)="userForm.role = 'UTILISATEUR'" 
+                   [class]="userForm.role === 'UTILISATEUR' ? 'border-rose-500 bg-rose-500/10' : 'border-white/10 bg-white/5 opacity-40'"
+                   class="cursor-pointer p-4 rounded-2xl border transition-all flex items-center gap-4 group hover:opacity-100">
+                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold text-xs">U</div>
+                <span class="font-bold text-sm text-white">Utilisateur</span>
+                <div *ngIf="userForm.role === 'UTILISATEUR'" class="ml-auto w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_10px_#be123c]"></div>
+              </div>
+
+              <!-- Responsable Card -->
+              <div (click)="userForm.role = 'RESPONSABLE_ENERGIE'" 
+                   [class]="userForm.role === 'RESPONSABLE_ENERGIE' ? 'border-rose-500 bg-rose-500/10' : 'border-white/10 bg-white/5 opacity-40'"
+                   class="cursor-pointer p-4 rounded-2xl border transition-all flex items-center gap-4 group hover:opacity-100">
+                <div class="w-8 h-8 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-500 font-bold text-xs">R</div>
+                <span class="font-bold text-sm text-white">Responsable d'Énergie</span>
+                <div *ngIf="userForm.role === 'RESPONSABLE_ENERGIE'" class="ml-auto w-2 h-2 bg-rose-500 rounded-full shadow-[0_0_10px_#be123c]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-4 mt-10">
+          <button (click)="saveUser()" class="flex-1 bg-rose-600 hover:bg-rose-500 py-4 rounded-xl font-bold transition-all shadow-lg uppercase text-[10px] tracking-widest">Enregistrer</button>
+          <button (click)="showModal = false" class="flex-1 bg-white/5 hover:bg-white/10 py-4 rounded-xl font-bold transition-all uppercase text-[10px] tracking-widest border border-white/10">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div *ngIf="showDeleteModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in zoom-in duration-200">
+      <div class="glass-card w-full max-sm p-10 rounded-[2.5rem] border border-rose-500/20 text-center shadow-2xl">
+        <div class="w-20 h-20 bg-rose-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-500/30">
+          <span class="text-rose-500 text-3xl font-black">!</span>
+        </div>
+        <h2 class="text-2xl font-black mb-2 text-white">Attention</h2>
+        <p class="text-white/50 text-sm mb-8 font-medium">Voulez-vous vraiment supprimer cet utilisateur ?</p>
+        <div class="flex flex-col gap-3">
+          <button (click)="confirmDelete()" class="w-full bg-rose-600 hover:bg-rose-500 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all shadow-lg">Confirmer</button>
+          <button (click)="showDeleteModal = false" class="w-full bg-white/5 hover:bg-white/10 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all border border-white/10 text-white/50">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
