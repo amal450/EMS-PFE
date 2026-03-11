@@ -1,0 +1,27 @@
+<div class="pl-85 p-12 min-h-screen">
+  
+  <!-- Header -->
+  <div class="mb-16">
+    <p class="text-rose-500 font-black text-[10px] uppercase tracking-[0.5em] mb-2">Monitoring en direct</p>
+    <h2 class="text-7xl font-black tracking-tighter text-slate-800 lowercase leading-none">
+      {{ selectedAsset?.name || 'Veuillez choisir un noeud' }}
+    </h2>
+  </div>
+
+  <!-- Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+    <div class="glass-card p-10 shadow-xl border-l-[16px] border-rose-500">
+        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8 text-slate-800">Puissance (P)</p>
+        <h4 class="text-7xl font-black text-slate-800">{{ liveData().power }} <span class="text-xl opacity-20">kW</span></h4>
+    </div>
+    <div class="glass-card p-10 shadow-xl border-l-[16px] border-blue-500">
+        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8 text-slate-800">Tension (V)</p>
+        <h4 class="text-7xl font-black text-slate-800">{{ liveData().voltage }} <span class="text-xl opacity-20">V</span></h4>
+    </div>
+    <div class="bg-[#0f172a] p-10 rounded-[3rem] shadow-xl border-l-[16px] border-white/10 text-white">
+        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8">Intensité (I)</p>
+        <h4 class="text-7xl font-black">{{ liveData().intensity }} <span class="text-xl opacity-20">A</span></h4>
+    </div>
+  </div>
+
+</div>

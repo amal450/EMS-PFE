@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 
 @Controller('users')
-export class UsersController {
+export class UsersController { // <--- لازم يكون اسمها UsersController مش AssetsController
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
