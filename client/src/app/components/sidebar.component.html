@@ -1,155 +1,189 @@
 <style>
-  /* 1. Container الرئيسي مع منع الـ Scroll بالعرض */
+  /* 1. إخفاء الـ Scrollbar نهائياً مع الحفاظ على التمرير */
   .sidebar-container {
-    width: 340px; 
+    width: 330px; /* عرض متناسق */
     background: #0f172a;
     height: calc(100vh - 2rem);
     margin: 1rem;
     border-radius: 2.5rem;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem; /* مساحة داخلية موزعة بالباهي */
+    padding: 1.5rem;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.05);
     box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-    
-    overflow-x: hidden; /* أهم سطر: يقتل الـ scrollbar اللوطانية */
-    overflow-y: auto;   /* يخلي الـ scroll كان بالطول */
-    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; /* لـ Firefox */
   }
 
-  /* 2. تحسين شكل الـ Scrollbar الجانبي (باش يبان Pro) */
   .sidebar-container::-webkit-scrollbar {
-    width: 4px;
-  }
-  .sidebar-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    display: none; /* لـ Chrome و Safari (تنحي الفراغ الأبيض) */
   }
 
-  /* 3. منع النصوص الطويلة من تدمير الـ Layout */
-  .text-truncate {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    max-width: 150px; /* يخلي الاسم ما يفوتش مساحته */
+  .text-node {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
-  /* 4. الـ Active State (اللون الـ Rose كي تختار عنصر) */
   .node-active {
-    background: rgba(244, 63, 94, 0.12) !important;
-    border: 1px solid rgba(190, 18, 60, 0.3) !important;
+    background: rgba(244, 63, 94, 0.15) !important;
+    border: 1px solid #be123c !important;
     color: #fb7185 !important;
   }
 
   .glass-item {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
+  }
+
+  .action-btn {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .group:hover .action-btn {
+    opacity: 1;
   }
 </style>
 
-<div class="sidebar-container scrollbar-hide">
+<div class="sidebar-container">
   
-  <!-- LOGO SECTION -->
-  <div class="flex items-center gap-4 mb-10 px-2">
-    <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20 animate-pulse">⚡</div>
-    <div>
-      <h1 class="text-xl font-black tracking-tighter leading-none italic">EMS VOLT</h1>
-      <p class="text-[9px] opacity-40 uppercase tracking-widest mt-1 font-bold">Industrial OS</p>
-    </div>
+  <!-- Logo -->
+  <div class="flex items-center gap-3 mb-10 px-2">
+    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">⚡</div>
+    <h1 class="text-xl font-black tracking-tighter italic">EMS VOLT</h1>
   </div>
 
- 
-
-  <!-- HIERARCHY EXPLORER (The Tree) -->
-  <div class="flex-1 space-y-8 px-2">
+  <!-- Hierarchy Explorer -->
+  <div class="flex-1 space-y-6">
     <div>
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-[10px] font-black opacity-30 uppercase tracking-[0.4em]">Infrastructure</h3>
-        <!-- US2: Admin Only Add Site -->
-        <button *ngIf="currentUser.role === 'ADMIN'" (click)="openAddSite()" 
-                class="text-rose-500 font-black text-2xl hover:scale-125 transition-all">+</button>
+      <div class="flex justify-between items-center mb-6 px-2">
+        <h3 class="text-[10px] font-black opacity-30 uppercase tracking-[0.4em]">Explorateur</h3>
+        <button *ngIf="currentUser.role === 'ADMIN'" (click)="openAddSubAsset(null, 'SITE')" class="text-rose-500 font-bold text-xl">+</button>
       </div>
 
-      <!-- Loop des Sites -->
+      <!-- 1. SITES -->
       <div class="space-y-4">
-        <div *ngFor="let site of hierarchy()" class="space-y-2 animate-in fade-in duration-500">
-          
-          <!-- Site Element Row -->
+        <div *ngFor="let site of hierarchy()" class="space-y-2">
           <div class="group flex items-center gap-2">
-            <div (click)="selectAsset(site)" 
-                 [class.node-active]="selectedId === site.id"
-                 class="glass-item flex-1 p-3 rounded-2xl cursor-pointer hover:bg-white/10 flex items-center gap-3 min-w-0">
-              
-              <span class="text-[10px] font-black uppercase tracking-widest text-truncate">{{site.name}}</span>
+            <div (click)="selectAsset(site)" [class.node-active]="selectedId === site.id"
+                 class="glass-item flex-1 p-3 rounded-xl cursor-pointer hover:bg-white/5 flex items-center min-w-0">
+              <span class="text-node">{{site.name}}</span>
             </div>
-            
-            <!-- Site Actions (Hover) -->
-            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0">
-                <button (click)="editAsset(site)" class="text-[10px] hover:text-blue-400">✏️</button>
+            <div class="action-btn flex items-center gap-2">
+                <button (click)="openEditAsset(site)" class="text-[10px] text-blue-400">✏️</button>
                 <button *ngIf="currentUser.role === 'ADMIN'" (click)="askDeleteAsset(site.id)" class="text-rose-500">🗑️</button>
-                <button *ngIf="currentUser.role !== 'UTILISATEUR'" (click)="addTGBT(site.id)" class="text-emerald-400 font-black text-lg">+</button>
+                <button (click)="openAddSubAsset(site, 'TGBT')" class="text-green-400 font-bold">+</button>
             </div>
           </div>
 
-          <!-- TGBT Children List (Nested) -->
-          <div class="pl-6 border-l border-white/5 ml-5 space-y-1">
-            <div *ngFor="let child of site.children" class="group/child flex items-center gap-2">
-              <div (click)="selectAsset(child)" 
-                   [class.node-active]="selectedId === child.id"
-                   class="flex-1 p-2.5 rounded-xl hover:bg-white/5 cursor-pointer text-[10px] opacity-50 hover:opacity-100 flex items-center gap-3 transition-all min-w-0">
-                <span class="w-1.5 h-1.5 rounded-full bg-current opacity-30 flex-shrink-0"></span>
-                <span class="font-bold tracking-tight text-truncate">{{child.name}}</span>
+          <!-- 2. TGBTs -->
+          <div class="pl-4 border-l border-white/5 ml-2 space-y-2">
+            <div *ngFor="let tgbt of site.children" class="space-y-2">
+              <div class="group flex items-center gap-2">
+                <div (click)="selectAsset(tgbt)" [class.node-active]="selectedId === tgbt.id"
+                     class="glass-item flex-1 p-2.5 rounded-lg hover:bg-white/5 cursor-pointer flex items-center min-w-0">
+                  <span class="text-node" style="font-size: 10px; opacity: 0.8;">{{tgbt.name}}</span>
+                </div>
+                <div class="action-btn flex items-center gap-2">
+                    <button (click)="openEditAsset(tgbt)" class="text-[10px] text-blue-400">✏️</button>
+                    <button (click)="askDeleteAsset(tgbt.id)" class="text-rose-500">🗑️</button>
+                    <button (click)="openAddSubAsset(tgbt, 'ARMOIRE')" class="text-blue-400 font-bold">+</button>
+                </div>
               </div>
-              <!-- TGBT Actions (Hover) -->
-              <div class="flex gap-2 opacity-0 group-hover/child:opacity-100 transition-all scale-75 flex-shrink-0">
-                <button (click)="editAsset(child)" class="text-blue-400">✏️</button>
-                <button (click)="askDeleteAsset(child.id)" class="text-rose-500">🗑️</button>
+
+              <!-- 3. ARMOIRES -->
+              <div class="pl-4 border-l border-white/5 ml-2 space-y-2">
+                <div *ngFor="let arm of tgbt.children" class="space-y-2">
+                  <div class="group flex items-center gap-2">
+                    <div (click)="selectAsset(arm)" [class.node-active]="selectedId === arm.id"
+                         class="glass-item flex-1 p-2 rounded-lg hover:bg-white/5 cursor-pointer flex items-center min-w-0">
+                      <span class="text-node" style="font-size: 9px; opacity: 0.6;">{{arm.name}}</span>
+                    </div>
+                    <div class="action-btn flex items-center gap-2">
+                        <button (click)="openEditAsset(arm)" class="text-[10px] text-blue-400">✏️</button>
+                        <button (click)="askDeleteAsset(arm.id)" class="text-rose-500">🗑️</button>
+                        <button (click)="openAddSubAsset(arm, 'LIGNE')" class="text-rose-400 font-bold">+</button>
+                    </div>
+                  </div>
+
+                  <!-- 4. LIGNES -->
+                  <div class="pl-4 border-l border-white/5 ml-2 space-y-1">
+                    <div *ngFor="let ligne of arm.children" class="space-y-1 group">
+                      <div class="flex items-center gap-2">
+                        <div (click)="selectAsset(ligne)" [class.node-active]="selectedId === ligne.id"
+                             class="flex-1 p-1.5 rounded-md hover:bg-white/5 cursor-pointer flex items-center min-w-0">
+                           <span class="text-node" style="font-size: 8px; opacity: 0.4;">{{ligne.name}}</span>
+                        </div>
+                        <div class="action-btn flex items-center gap-2">
+                            <button (click)="openEditAsset(ligne)" class="text-[10px] text-blue-400">✏️</button>
+                            <!-- زدنا بونة الـ Delete للـ Ligne هوني -->
+                            <button (click)="askDeleteAsset(ligne.id)" class="text-rose-500">🗑️</button>
+                            <button (click)="openAddSubAsset(ligne, 'EQUIPEMENT')" class="text-amber-400 font-bold">+</button>
+                        </div>
+                      </div>
+
+                      <!-- 5. EQUIPEMENTS -->
+                      <div class="pl-4 ml-2 space-y-1">
+                        <div *ngFor="let eq of ligne.children" (click)="selectAsset(eq)" 
+                             [class.node-active]="selectedId === eq.id"
+                             class="group p-1.5 rounded-md hover:bg-rose-500/20 cursor-pointer flex justify-between items-center">
+                           <span class="text-[8px] text-rose-300 font-black uppercase tracking-widest">{{eq.name}}</span>
+                           <div class="action-btn flex gap-2">
+                              <button (click)="openEditAsset(eq)" class="text-blue-400">✏️</button>
+                              <button (click)="askDeleteAsset(eq.id)" class="text-rose-500">🗑️</button>
+                           </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
-
         </div>
       </div>
     </div>
   </div>
 
-  <!-- GESTION COMPTES BUTTON (Fixed at Bottom) -->
-  <div *ngIf="currentUser.role === 'ADMIN'" class="mt-8 pt-8 border-t border-white/5">
-    <button (click)="onNavigate('users')" 
-            class="w-full p-5 rounded-2xl bg-[#be123c] text-white font-black text-[10px] uppercase tracking-[0.2em] shadow-lg shadow-rose-900/20 hover:bg-rose-600 transition-all hover:scale-105 active:scale-95">
+  <!-- Bottom Admin Button -->
+  <div *ngIf="currentUser.role === 'ADMIN'" class="mt-8 pt-6 border-t border-white/5">
+    <button (click)="onNavigate('users')" class="w-full p-4 rounded-2xl bg-[#be123c] text-white font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-rose-600 transition-all">
       Gestion Comptes
     </button>
   </div>
 
-  <!-- ASSET MODAL (Add/Edit) -->
-  <div *ngIf="showAssetModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-    <div class="bg-[#0f172a] w-full max-w-sm p-12 rounded-[3rem] border border-white/10 shadow-2xl text-center">
-      <h2 class="text-2xl font-black mb-8 italic uppercase text-white tracking-tighter">
-        {{ isEditAssetMode ? 'Modifier' : 'Nouveau' }} {{ assetForm.type }}
-      </h2>
-      <input [(ngModel)]="assetForm.name" placeholder="Nom de l'élément..." 
-             class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-emerald-500 mb-8 font-bold text-center">
+  <!-- الـ Modals تقعد كيمّا هي -->
+  <div *ngIf="showAssetModal" class="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div class="bg-[#0f172a] w-full max-w-sm p-10 rounded-[3rem] border border-white/10 shadow-2xl text-center">
+      <h2 class="text-2xl font-black mb-8 text-white tracking-tighter uppercase italic">{{ isEditAssetMode ? 'Modifier' : 'Nouveau' }} {{ assetForm.type }}</h2>
+      <input [(ngModel)]="assetForm.name" placeholder="Nom..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white outline-none focus:border-rose-500 mb-8 font-bold text-center">
       <div class="flex gap-4">
-        <button (click)="saveAsset()" class="flex-[2] bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl font-bold text-white uppercase text-[10px] tracking-widest shadow-xl">Enregistrer</button>
-        <button (click)="showAssetModal = false" class="flex-1 bg-white/5 hover:bg-white/10 py-4 rounded-xl font-bold text-white/30 border border-white/10 text-[10px] uppercase">Annuler</button>
+        <button (click)="saveAsset()" class="flex-[2] bg-rose-600 py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest">Enregistrer</button>
+        <button (click)="showAssetModal = false" class="flex-1 bg-white/5 py-4 rounded-xl font-bold text-white/30 text-[10px] uppercase">Annuler</button>
       </div>
     </div>
   </div>
 
-  <!-- DELETE CONFIRMATION MODAL -->
-  <div *ngIf="showDeleteAssetModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
-    <div class="bg-[#0f172a] w-full max-w-sm p-12 rounded-[3.5rem] border border-rose-500/20 text-center shadow-2xl animate-in zoom-in duration-200">
-      <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-rose-500/20 shadow-[0_0_40px_rgba(244,63,94,0.2)]">
-        <span class="text-rose-500 text-4xl font-black italic">!</span>
+  <div *ngIf="showDeleteAssetModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in zoom-in duration-200">
+    <div class="bg-[#0f172a] w-full max-w-sm p-12 rounded-[3.5rem] border border-rose-500/20 text-center shadow-2xl">
+      <div class="w-20 h-20 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-rose-500/20">
+        <span class="text-rose-500 text-5xl font-black italic">!</span>
       </div>
       <h2 class="text-2xl font-black mb-3 text-white tracking-tighter uppercase">Attention</h2>
-      <p class="text-blue-200/40 text-xs mb-10 font-medium leading-relaxed px-4">Supprimer cet élément ? <br> <span class="text-rose-500/60 font-black">Cette action est définitive.</span></p>
+      <p class="text-blue-200/40 text-xs mb-10 font-medium leading-relaxed px-4">Supprimer cet élément ? <br><span class="text-rose-500/60 font-black text-[9px]">L'ACTION EST DÉFINITIVE.</span></p>
       <div class="flex flex-col gap-4">
-        <button (click)="confirmDeleteAsset()" class="w-full bg-rose-600 hover:bg-rose-500 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.4em] transition-all">CONFIRMER</button>
-        <button (click)="showDeleteAssetModal = false" class="w-full bg-white/5 hover:bg-white/10 py-5 rounded-2xl font-bold uppercase text-[10px] tracking-widest border border-white/5 text-white/40">ANNULER</button>
+        <button (click)="confirmDeleteAsset()" class="w-full bg-rose-600 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.4em] transition-all">CONFIRMER</button>
+        <button (click)="showDeleteAssetModal = false" class="w-full bg-white/5 py-5 rounded-2xl font-bold uppercase text-[10px] tracking-widest border border-white/5 text-white/40">ANNULER</button>
       </div>
     </div>
   </div>

@@ -14,23 +14,20 @@ export class SidebarComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   
-  // --- البيانات الأساسية ---
   hierarchy = signal<any[]>([]);
   selectedId: number | null = null;
   currentUser = { username: 'Amal', role: 'ADMIN' }; 
 
-  // --- التحكم في المودال (Add/Edit) ---
+  // Modals Add/Edit
   showAssetModal = false;
   isEditAssetMode = false;
-  assetForm = { id: null as number | null, name: '', type: 'SITE', parentId: null as number | null };
+  assetForm = { id: null as number | null, name: '', type: '', parentId: null as number | null };
 
-  // --- التحكم في مودال الحذف (Delete Modal) ---
+  // Modal Delete
   showDeleteAssetModal = false;
   assetToDeleteId: number | null = null;
 
-  ngOnInit() {
-    this.loadHierarchy();
-  }
+  ngOnInit() { this.loadHierarchy(); }
 
   loadHierarchy() {
     this.http.get<any[]>('http://localhost:3000/assets/tree').subscribe({
@@ -39,6 +36,7 @@ export class SidebarComponent implements OnInit {
     });
   }
 
+  // --- NAVIGATION ---
   onNavigate(path: string, id?: number) {
     if (id) {
       this.selectedId = id;
@@ -48,25 +46,19 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  selectAsset(asset: any) {
-    this.onNavigate('dashboard', asset.id);
-  }
+  selectAsset(asset: any) { this.onNavigate('dashboard', asset.id); }
 
-  // --- HIERARCHY CRUD ---
+  // --- CRUD HIERARCHY ---
   
-  openAddSite() {
+  // Fonction bech tziid ay 7aja (TGBT, Armoire, Ligne, walla Equipement)
+  openAddSubAsset(parent: any, type: string) {
     this.isEditAssetMode = false;
-    this.assetForm = { id: null, name: '', type: 'SITE', parentId: null };
+    this.assetForm = { id: null, name: '', type: type, parentId: parent ? parent.id : null };
     this.showAssetModal = true;
   }
 
-  addTGBT(parentId: number) {
-    this.isEditAssetMode = false;
-    this.assetForm = { id: null, name: '', type: 'TGBT', parentId: parentId };
-    this.showAssetModal = true;
-  }
-
-  editAsset(asset: any) {
+  // Fonction bech t-modifier ay ka3ba (Site, Armoire, walla Ligne...)
+  openEditAsset(asset: any) {
     this.isEditAssetMode = true;
     this.assetForm = { id: asset.id, name: asset.name, type: asset.type, parentId: asset.parentId };
     this.showAssetModal = true;
@@ -83,7 +75,7 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  // --- CUSTOM DELETE LOGIC ---
+  // Confirmation Delete
   askDeleteAsset(id: number) {
     this.assetToDeleteId = id;
     this.showDeleteAssetModal = true;
