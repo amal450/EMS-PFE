@@ -1,27 +1,142 @@
-<div class="pl-85 p-12 min-h-screen">
-  
-  <!-- Header -->
-  <div class="mb-16">
-    <p class="text-rose-500 font-black text-[10px] uppercase tracking-[0.5em] mb-2">Monitoring en direct</p>
-    <h2 class="text-7xl font-black tracking-tighter text-slate-800 lowercase leading-none">
-      {{ selectedAsset?.name || 'Veuillez choisir un noeud' }}
-    </h2>
-  </div>
+<style>
+  /* CSS INTEGRÉ - Style Industriel Pro 20/20 */
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
 
-  <!-- Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-    <div class="glass-card p-10 shadow-xl border-l-[16px] border-rose-500">
-        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8 text-slate-800">Puissance (P)</p>
-        <h4 class="text-7xl font-black text-slate-800">{{ liveData().power }} <span class="text-xl opacity-20">kW</span></h4>
-    </div>
-    <div class="glass-card p-10 shadow-xl border-l-[16px] border-blue-500">
-        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8 text-slate-800">Tension (V)</p>
-        <h4 class="text-7xl font-black text-slate-800">{{ liveData().voltage }} <span class="text-xl opacity-20">V</span></h4>
-    </div>
-    <div class="bg-[#0f172a] p-10 rounded-[3rem] shadow-xl border-l-[16px] border-white/10 text-white">
-        <p class="text-[10px] font-black opacity-30 uppercase tracking-widest mb-8">Intensité (I)</p>
-        <h4 class="text-7xl font-black">{{ liveData().intensity }} <span class="text-xl opacity-20">A</span></h4>
-    </div>
-  </div>
+  .dashboard-wrapper {
+    flex: 1; padding: 1.5rem;
+    background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 50%, #fae8ff 100%);
+    overflow-y: auto; font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh;
+  }
 
+  .main-container {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(30px);
+    border-radius: 3.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 2.5rem;
+  }
+
+  .header-compact { margin-bottom: 2rem; padding-left: 1rem; }
+  .title-node { font-weight: 800; font-size: 3.2rem; color: #0f172a; letter-spacing: 0px; line-height: 1; text-transform: capitalize; }
+
+  /* 2. CARDS STYLE (أغمق و أوضح) */
+  .kpi-card-full {
+    border-radius: 2.8rem;
+    padding: 1.5rem;
+    height: 300px; /* Kabberna el height chwaya bech l-asémi takhou blasa */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  .icon-box {
+    width: 42px; height: 42px; background: white; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .label-top { font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #64748b; }
+  .value-main { font-size: 3.2rem; font-weight: 800; color: #0f172a; letter-spacing: -2px; line-height: 1; }
+  .unit { font-size: 12px; font-weight: 400; opacity: 0.3; margin-left: 4px; }
+
+  /* Alwan plus foncés kima tlobt */
+  .c-mint { background-color: #8edfb5; }      /* Puissance */
+  .c-lavender { background-color: #506fd3; }  /* Tension */
+  .c-rose { background-color: #e8acac; }      /* Intensité */
+  .c-teal { background-color: #74ddc6; }      /* Fréquence */
+  .c-sky { background-color: #9dbcd0; }       /* Cos Phi */
+
+  /* Phase details inner grid - 2 Columns bech n-fasslo el 6 values */
+  .phase-mini-grid {
+    display: grid;
+    grid-template-cols: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: 5px;
+  }
+  .phase-item { font-size: 11px; font-weight: 900; color: #1e293b; }
+  .phase-label { font-size: 8px; font-weight: 700; opacity: 0.5; text-transform: uppercase; }
+
+</style>
+
+<div class="dashboard-wrapper animate-in fade-in duration-1000">
+  <div class="main-container">
+    
+    <!-- HEADER -->
+    <div class="header-compact">
+      <h2 class="title-node">{{ selectedAsset?.name || 'Sélectionnez un noeud' }}</h2>
+      
+    </div>
+
+    <!-- KPI CARDS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-5 mb-10">
+      
+      <!-- 1. PUISSANCE (P) -->
+      <div class="kpi-card-full c-mint">
+        <div class="flex justify-between items-start">
+          <span class="label-top">Puissance</span>
+        </div>
+        <h4 class="value-main">{{ liveData().power }}<span class="unit">KW</span></h4>
+        <p class="mt-4 text-[8px] font-bold text-emerald-700 bg-white/40 w-fit px-3 py-1 rounded-full uppercase italic">↑ Aggrégation Active</p>
+      </div>
+      <!-- 2. TENSION (THE 6 VALUES - V1, V2, V3, U1, U2, U3) -->
+      <div class="kpi-card-full c-lavender">
+        <div class="flex justify-between items-start">
+          <span class="label-top">Tension</span>
+        </div>
+        <div class="phase-mini-grid">
+          <!-- Simple -->
+          <div class="border-r border-indigo-200 pr-2"><p class="phase-label">V1</p><p class="phase-item">{{liveData().v1}}V</p></div>
+          <div class="pl-2"><p class="phase-label">U12</p><p class="phase-item">{{liveData().u1}}V</p></div>
+          <!-- Composed -->
+          <div class="border-r border-indigo-200 pr-2"><p class="phase-label">V2</p><p class="phase-item">{{liveData().v2}}V</p></div>
+          <div class="pl-2"><p class="phase-label">U23</p><p class="phase-item">{{liveData().u2}}V</p></div>
+          <!-- More -->
+          <div class="border-r border-indigo-200 pr-2"><p class="phase-label">V3</p><p class="phase-item">{{liveData().v3}}V</p></div>
+          <div class="pl-2"><p class="phase-label">U31</p><p class="phase-item">{{liveData().u3}}V</p></div>
+        </div>
+      </div>
+
+      <!-- 3. INTENSITÉ (I1, I2, I3) -->
+      <div class="kpi-card-full c-rose">
+        <div class="flex justify-between items-start">
+          <span class="label-top">Intensité</span>
+        </div>
+        <div class="space-y-3 mb-2">
+          <div class="flex justify-between border-b border-rose-300/30 pb-1"><span class="phase-label">Phase L1</span><span class="phase-item">{{liveData().i1}}A</span></div>
+          <div class="flex justify-between border-b border-rose-300/30 pb-1"><span class="phase-label">Phase L2</span><span class="phase-item">{{liveData().i2}}A</span></div>
+          <div class="flex justify-between"><span class="phase-label">Phase L3</span><span class="phase-item">{{liveData().i3}}A</span></div>
+        </div>
+      </div>
+
+      <!-- 4. FRÉQUENCE (Hz) -->
+      <div class="kpi-card-full c-teal">
+        <div class="flex justify-between items-start">
+          <span class="label-top">Fréquence</span>
+        </div>
+        <h4 class="value-main" style="font-size: 3rem;">{{ liveData().frequency }}<span class="unit">Hz</span></h4>
+        <p class="text-[9px] font-black opacity-30 uppercase tracking-widest italic text-center">Stable Grid Control</p>
+      </div>
+
+      <!-- 5. COS PHI (PF) -->
+      <div class="kpi-card-full c-sky">
+        <div class="flex justify-between items-start">
+          <span class="label-top">Cos Φ</span>
+        </div>
+        <h4 class="value-main" style="font-size: 3rem;">{{ liveData().cosPhi }}<span class="unit">PF</span></h4>
+        <p class="text-[9px] font-black opacity-30 uppercase tracking-widest italic text-center">Optimized Phase</p>
+      </div>
+
+    </div>
+
+    <!-- LOWER SECTION -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 bg-white/60 rounded-[3.5rem] border border-white p-12 h-64 flex flex-col justify-center items-center shadow-sm">
+            <h3 class="text-slate-800 font-black uppercase tracking-[1.5em] text-[9px] opacity-20 italic">Flux de données en cours...</h3>
+        </div>
+    </div>
+
+  </div>
 </div>
