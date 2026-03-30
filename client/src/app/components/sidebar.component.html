@@ -1,206 +1,217 @@
-<style>
-  /* 1. مظهر الـ Sidebar بستايل الـ Light Glass الجديد */
-  .sidebar-container {
-    width: 330px;
-    /* خلفية زجاجية فاتحة تتماشى مع الـ Dashboard */
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    height: calc(100vh - 2rem);
-    margin: 1rem;
-    border-radius: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    /* كتيبة غامقة باش تبان فوق الورد الفاتح */
-    color: #1e293b; 
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-  }
+<aside class="w-[340px] bg-white h-[calc(100vh-2rem)] rounded-[2.8rem] flex flex-col p-6 shadow-xl border border-slate-100 overflow-hidden ml-4 my-4 font-sans">
 
-  .sidebar-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  .text-node {
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.2;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #334155; /* Slate 700 */
-  }
-
-  /* اللون الأزرق/البنفسجي الهادئ عند الضغط */
-  .node-active {
-    background: rgba(99, 102, 241, 0.1) !important;
-    border: 1px solid rgba(99, 102, 241, 0.3) !important;
-    color: #4f46e5 !important;
-  }
-
-  .glass-item {
-    background: rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    transition: all 0.2s ease;
-  }
-
-  .action-btn {
-    opacity: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .group:hover .action-btn {
-    opacity: 1;
-  }
-
-  /* ألوان الأيقونات والأزرار لتناسب الـ Light Theme */
-  .btn-plus-main { color: #f43f5e; } /* Rose */
-  .btn-plus-sub { color: #3b82f6; } /* Blue */
-</style>
-
-<div class="sidebar-container">
-  
-  <!-- Logo (EMS VOLT مع أيقونة واضحة) -->
-  <div class="flex items-center gap-3 mb-10 px-2">
-    <div class="w-10 h-10 bg-[#3b82f6] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-      <span class="text-xl">⚡</span>
-    </div>
-    <div>
-      <h1 class="text-xl font-[900] tracking-tighter italic text-slate-800">EMS VOLT</h1>
-      <p class="text-[8px] opacity-40 uppercase tracking-widest font-black">Energy OS v26.3</p>
+  <!-- Logo -->
+  <div class="mb-8 px-1">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-gradient-to-br from-rose-600 to-rose-700 rounded-2xl flex items-center justify-center text-xl shadow-md">
+        <span class="text-white">⚡</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-black tracking-tight text-slate-900 uppercase leading-none italic">Energizer</h1>
+        <p class="text-[8px] font-bold text-rose-500 uppercase tracking-[0.2em] mt-1">Energy OS V2</p>
+      </div>
     </div>
   </div>
 
-  <!-- Hierarchy Explorer -->
-  <div class="flex-1 space-y-6">
-    <div>
-      <div class="flex justify-between items-center mb-6 px-2">
-        <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Explorateur</h3>
-        <button *ngIf="currentUser.role === 'ADMIN'" (click)="openAddSubAsset(null, 'SITE')" class="btn-plus-main font-bold text-xl hover:scale-125 transition-all">+</button>
-      </div>
+  <!-- Search -->
+  <div class="relative mb-6">
+    <span class="absolute left-5 top-1/2 -translate-y-1/2 opacity-30 text-xs">🔍</span>
+    <input
+      type="text"
+      placeholder="Rechercher..."
+      class="w-full bg-slate-50 border border-slate-100 rounded-[1.4rem] py-3 pl-10 text-[11px] font-semibold outline-none focus:ring-2 ring-rose-500/10 transition-all"
+    >
+  </div>
 
-      <!-- 1. SITES -->
-      <div class="space-y-4">
-        <div *ngFor="let site of hierarchy()" class="space-y-2">
-          <div class="group flex items-center gap-2">
-            <div (click)="selectAsset(site)" [class.node-active]="selectedId === site.id"
-                 class="glass-item flex-1 p-3 rounded-xl cursor-pointer hover:bg-white/80 flex items-center min-w-0 shadow-sm">
-              <span class="text-node">{{site.name}}</span>
+  <!-- Hierarchy -->
+  <div class="flex-1 overflow-y-auto pr-1 scrollbar-hide">
+
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Infrastructure</h3>
+      <button
+        (click)="openAddSubAsset(null, 'SITE')"
+        class="w-6 h-6 flex items-center justify-center bg-rose-50 text-rose-600 rounded-lg font-black hover:bg-rose-600 hover:text-white transition-all"
+      >
+        +
+      </button>
+    </div>
+
+    <div class="space-y-4">
+
+      <!-- SITE -->
+      <div *ngFor="let site of hierarchy()" class="space-y-3">
+
+        <div
+          class="group flex items-center justify-between px-4 py-3 rounded-[1.8rem] cursor-pointer transition-all border border-slate-100 shadow-sm"
+          [class.bg-slate-900]="selectedId === site.id"
+          [class.bg-white]="selectedId !== site.id"
+          (click)="selectAsset(site)"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-xl flex items-center justify-center text-base"
+              [class.bg-rose-500]="selectedId === site.id"
+              [class.bg-rose-50]="selectedId !== site.id"
+            >
+              🏢
             </div>
-            <div class="action-btn flex items-center gap-2">
-                <button (click)="openEditAsset(site)" class="text-[10px] opacity-40 hover:opacity-100">✏️</button>
-                <button *ngIf="currentUser.role === 'ADMIN'" (click)="askDeleteAsset(site.id)" class="text-rose-500 opacity-60 hover:opacity-100">🗑️</button>
-                <button (click)="openAddSubAsset(site, 'TGBT')" class="btn-plus-sub font-bold text-lg hover:scale-125">+</button>
-            </div>
+
+            <span
+              class="text-[11px] font-bold uppercase tracking-wide"
+              [class.text-white]="selectedId === site.id"
+              [class.text-slate-800]="selectedId !== site.id"
+            >
+              {{site.name}}
+            </span>
           </div>
 
-          <!-- 2. TGBTs -->
-          <div class="pl-4 border-l border-slate-200 ml-2 space-y-2">
-            <div *ngFor="let tgbt of site.children" class="space-y-2">
-              <div class="group flex items-center gap-2">
-                <div (click)="selectAsset(tgbt)" [class.node-active]="selectedId === tgbt.id"
-                     class="glass-item flex-1 p-2.5 rounded-lg hover:bg-white/80 cursor-pointer flex items-center min-w-0 shadow-sm">
-                  <span class="text-node" style="font-size: 10px; opacity: 0.8;">{{tgbt.name}}</span>
-                </div>
-                <div class="action-btn flex items-center gap-2">
-                    <button (click)="openEditAsset(tgbt)" class="text-[10px] opacity-40">✏️</button>
-                    <button (click)="askDeleteAsset(tgbt.id)" class="text-rose-500 opacity-60">🗑️</button>
-                    <button (click)="openAddSubAsset(tgbt, 'ARMOIRE')" class="text-blue-400 font-bold">+</button>
-                </div>
-              </div>
-
-              <!-- 3. ARMOIRES -->
-              <div class="pl-4 border-l border-slate-200 ml-2 space-y-2">
-                <div *ngFor="let arm of tgbt.children" class="space-y-2">
-                  <div class="group flex items-center gap-2">
-                    <div (click)="selectAsset(arm)" [class.node-active]="selectedId === arm.id"
-                         class="glass-item flex-1 p-2 rounded-lg hover:bg-white/80 cursor-pointer flex items-center min-w-0 shadow-sm">
-                      <span class="text-node" style="font-size: 9px; opacity: 0.6;">{{arm.name}}</span>
-                    </div>
-                    <div class="action-btn flex items-center gap-2">
-                        <button (click)="openEditAsset(arm)" class="text-[10px] opacity-40">✏️</button>
-                        <button (click)="askDeleteAsset(arm.id)" class="text-rose-500 opacity-60">🗑️</button>
-                        <button (click)="openAddSubAsset(arm, 'LIGNE')" class="text-rose-400 font-bold">+</button>
-                    </div>
-                  </div>
-
-                  <!-- 4. LIGNES -->
-                  <div class="pl-4 border-l border-slate-200 ml-2 space-y-1">
-                    <div *ngFor="let ligne of arm.children" class="space-y-1 group">
-                      <div class="flex items-center gap-2">
-                        <div (click)="selectAsset(ligne)" [class.node-active]="selectedId === ligne.id"
-                             class="glass-item flex-1 p-1.5 rounded-md hover:bg-white/80 cursor-pointer flex items-center min-w-0">
-                           <span class="text-node" style="font-size: 8px; opacity: 0.4;">{{ligne.name}}</span>
-                        </div>
-                        <div class="action-btn flex items-center gap-2">
-                            <button (click)="openEditAsset(ligne)" class="text-[10px] opacity-40">✏️</button>
-                            <button (click)="askDeleteAsset(ligne.id)" class="text-rose-500 opacity-60">🗑️</button>
-                            <button (click)="openAddSubAsset(ligne, 'EQUIPEMENT')" class="text-orange-400 font-bold">+</button>
-                        </div>
-                      </div>
-
-                      <!-- 5. EQUIPEMENTS -->
-                      <div class="pl-4 ml-2 space-y-1">
-                        <div *ngFor="let eq of ligne.children" (click)="selectAsset(eq)" 
-                             [class.node-active]="selectedId === eq.id"
-                             class="group p-1.5 rounded-md bg-white/40 hover:bg-white cursor-pointer flex justify-between items-center shadow-sm">
-                           <span class="text-[8px] text-slate-400 font-black uppercase tracking-widest">{{eq.name}}</span>
-                           <div class="action-btn flex gap-2">
-                              <button (click)="openEditAsset(eq)" class="text-[8px] opacity-40">✏️</button>
-                              <button (click)="askDeleteAsset(eq.id)" class="text-rose-500 opacity-60 text-[8px]">🗑️</button>
-                           </div>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+          <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+            <button (click)="openEditAsset(site); $event.stopPropagation()" class="text-[10px]">✏️</button>
+            <button *ngIf="currentUser.role === 'ADMIN'" (click)="askDeleteAsset(site.id); $event.stopPropagation()" class="text-rose-500 text-[10px]">🗑️</button>
+            <button (click)="openAddSubAsset(site, 'TGBT'); $event.stopPropagation()" class="text-rose-600 font-bold text-lg">+</button>
           </div>
         </div>
+
+        <!-- TGBT -->
+        <div class="pl-4 border-l border-slate-100 ml-4 space-y-3">
+
+          <div *ngFor="let tgbt of site.children" class="space-y-2">
+
+            <div class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50 transition-all">
+
+              <div
+                (click)="selectAsset(tgbt)"
+                [class.text-blue-600]="selectedId === tgbt.id"
+                class="text-[11px] font-semibold text-slate-500 cursor-pointer flex items-center gap-3"
+              >
+                <span
+                  class="w-2 h-2 rounded-full border border-slate-300"
+                  [class.bg-blue-600]="selectedId === tgbt.id"
+                ></span>
+                {{tgbt.name}}
+              </div>
+
+              <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                <button (click)="openEditAsset(tgbt); $event.stopPropagation()" class="text-xs">✏️</button>
+                <button (click)="askDeleteAsset(tgbt.id); $event.stopPropagation()" class="text-rose-500 text-xs">🗑️</button>
+                <button (click)="openAddSubAsset(tgbt, 'ARMOIRE'); $event.stopPropagation()" class="text-blue-600 font-bold text-lg">+</button>
+              </div>
+            </div>
+
+            <!-- ARMOIRE -->
+            <div class="pl-5 border-l border-slate-100 space-y-2">
+
+              <div *ngFor="let arm of tgbt.children" class="space-y-2">
+
+                <div class="group flex items-center justify-between px-3 py-2 rounded-xl hover:bg-slate-50 transition-all">
+
+                  <div
+                    (click)="selectAsset(arm)"
+                    [class.text-amber-600]="selectedId === arm.id"
+                    class="text-[10px] font-semibold text-slate-500 cursor-pointer flex items-center gap-2 uppercase"
+                  >
+                    ┖ {{arm.name}}
+                  </div>
+
+                  <div class="flex gap-2 opacity-0 group-hover:opacity-100">
+                    <button (click)="openEditAsset(arm); $event.stopPropagation()">✏️</button>
+                    <button (click)="askDeleteAsset(arm.id); $event.stopPropagation()" class="text-rose-500">🗑️</button>
+                    <button (click)="openAddSubAsset(arm, 'LIGNE'); $event.stopPropagation()" class="text-amber-500 font-bold text-lg">+</button>
+                  </div>
+                </div>
+
+                <!-- LIGNE -->
+                <div class="pl-5 border-l border-slate-100 space-y-2">
+
+                  <div *ngFor="let ligne of arm.children" class="space-y-1">
+
+                    <div class="group flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-50 transition-all">
+
+                      <div
+                        (click)="selectAsset(ligne)"
+                        [class.text-emerald-600]="selectedId === ligne.id"
+                        class="text-[10px] font-semibold text-slate-500 cursor-pointer flex items-center gap-2"
+                      >
+                        <span class="w-1.5 h-1.5 bg-slate-300 rounded-sm rotate-45"></span>
+                        {{ligne.name}}
+                      </div>
+
+                      <div class="flex gap-2 opacity-0 group-hover:opacity-100">
+                        <button (click)="openEditAsset(ligne); $event.stopPropagation()">✏️</button>
+                        <button (click)="askDeleteAsset(ligne.id); $event.stopPropagation()" class="text-rose-500">🗑️</button>
+                        <button (click)="openAddSubAsset(ligne, 'EQUIPEMENT'); $event.stopPropagation()" class="text-emerald-500 font-bold text-lg">+</button>
+                      </div>
+                    </div>
+
+                    <!-- EQUIPEMENT -->
+                    <div class="pl-5 space-y-1">
+
+                      <div
+                        *ngFor="let eq of ligne.children"
+                        (click)="selectAsset(eq)"
+                        [class.bg-indigo-600]="selectedId === eq.id"
+                        [class.text-white]="selectedId === eq.id"
+                        class="group flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer hover:bg-indigo-50 transition-all"
+                      >
+                        <span class="text-[9px] font-semibold uppercase tracking-wide">
+                          ↳ {{eq.name}}
+                        </span>
+
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100">
+                          <button (click)="openEditAsset(eq); $event.stopPropagation()">✏️</button>
+                          <button (click)="askDeleteAsset(eq.id); $event.stopPropagation()" class="text-rose-500">🗑️</button>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom -->
+  <div class="mt-6 p-4 bg-slate-900 rounded-[2rem] flex items-center gap-3 cursor-pointer hover:bg-rose-700 transition-all">
+    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-lg">⚙️</div>
+    <div>
+      <p class="text-[10px] font-bold text-white uppercase">Réglages</p>
+      <p class="text-[8px] text-rose-300 uppercase">Système</p>
     </div>
   </div>
-
-  <!-- Bottom Admin Button -->
-  <div *ngIf="currentUser.role === 'ADMIN'" class="mt-8 pt-6 border-t border-slate-200">
-    <button (click)="onNavigate('users')" class="w-full p-4 rounded-2xl bg-[#be123c] text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-200 hover:bg-rose-600 transition-all">
-      Gestion Comptes
-    </button>
-  </div>
-
-  <!-- MODAL: ADD / EDIT (Light Version) -->
-  <div *ngIf="showAssetModal" class="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
-    <div class="bg-white w-full max-w-sm p-10 rounded-[3rem] border border-white shadow-2xl text-center">
-      <h2 class="text-2xl font-black mb-8 text-slate-800 tracking-tighter uppercase italic">{{ isEditAssetMode ? 'Modifier' : 'Nouveau' }} {{ assetForm.type }}</h2>
-      <input [(ngModel)]="assetForm.name" placeholder="Nom de l'élément..." class="w-full bg-slate-50 border border-slate-100 rounded-2xl p-5 text-slate-800 outline-none focus:border-blue-500 mb-8 font-bold text-center">
+ <div *ngIf="showAssetModal" class="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+    <div class="bg-white w-full max-w-sm p-10 rounded-[3.5rem] shadow-2xl text-center border border-white">
+      <h2 class="text-2xl font-black mb-8 text-slate-900 tracking-tighter uppercase italic">{{ isEditAssetMode ? 'Modifier' : 'Nouveau' }} {{ assetForm.type }}</h2>
+      <input [(ngModel)]="assetForm.name" placeholder="Nom de l'élément..." class="w-full bg-slate-50 border-none rounded-2xl p-5 text-slate-900 outline-none focus:ring-2 ring-rose-500/20 mb-8 font-bold text-center">
       <div class="flex gap-4">
-        <button (click)="saveAsset()" class="flex-[2] bg-[#be123c] py-4 rounded-xl font-bold text-white uppercase text-[10px] tracking-widest shadow-lg shadow-rose-100">Enregistrer</button>
-        <button (click)="showAssetModal = false" class="flex-1 bg-slate-100 py-4 rounded-xl font-bold text-slate-400 text-[10px] uppercase">Annuler</button>
+        <button (click)="saveAsset()" class="flex-[2] bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-rose-600 transition-all shadow-xl">Enregistrer</button>
+        <button (click)="showAssetModal = false" class="flex-1 bg-slate-100 py-4 rounded-2xl font-bold text-slate-400 text-[10px] uppercase">Annuler</button>
       </div>
     </div>
   </div>
-
-  <!-- MODAL: DELETE (Light Version) -->
-  <div *ngIf="showDeleteAssetModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xl">
-    <div class="bg-white w-full max-w-sm p-12 rounded-[3.5rem] border border-white shadow-2xl text-center">
-      <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-rose-100">
-        <span class="text-rose-500 text-4xl font-black italic">!</span>
+  <div *ngIf="showDeleteAssetModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-xl animate-in zoom-in duration-200">
+    <div class="bg-white w-full max-w-sm p-12 rounded-[4rem] text-center shadow-2xl">
+      <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-rose-100 animate-pulse">
+        <span class="text-rose-600 text-5xl font-black">!</span>
       </div>
-      <h2 class="text-2xl font-black mb-3 text-slate-800 tracking-tighter uppercase">Attention</h2>
-      <p class="text-slate-400 text-xs mb-10 font-medium leading-relaxed px-4">Supprimer cet عنصر ؟ <br><span class="text-rose-500/60 font-black text-[9px]">L'ACTION EST DÉFINITIVE.</span></p>
+      <h2 class="text-2xl font-black mb-3 text-slate-900 uppercase tracking-tighter">Attention</h2>
+      <p class="text-slate-400 text-xs mb-10 font-medium leading-relaxed px-4 italic">Supprimer définitivement ? <br><span class="text-rose-600 font-black">Action irréversible.</span></p>
       <div class="flex flex-col gap-4">
-        <button (click)="confirmDeleteAsset()" class="w-full bg-[#be123c] py-5 rounded-2xl font-black text-white uppercase text-[10px] tracking-[0.4em] transition-all shadow-xl shadow-rose-100">CONFIRMER</button>
-        <button (click)="showDeleteAssetModal = false" class="w-full bg-slate-50 py-5 rounded-2xl font-bold text-slate-400 uppercase text-[10px] tracking-widest border border-slate-100">ANNULER</button>
+        <button (click)="confirmDeleteAsset()" class="w-full bg-rose-600 text-white py-5 rounded-3xl font-black uppercase text-[10px] tracking-[0.4em] shadow-lg shadow-rose-200 hover:scale-105 transition-all">CONFIRMER</button>
+        <button (click)="showDeleteAssetModal = false" class="w-full bg-slate-50 py-5 rounded-3xl font-bold uppercase text-[10px] tracking-widest text-slate-300">ANNULER</button>
       </div>
     </div>
   </div>
-
-</div> 
+</aside>

@@ -1,11 +1,18 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './components/sidebar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, SidebarComponent], // نزيدو الـ Sidebar هوني باش تظهر
+  imports: [RouterOutlet, SidebarComponent],
   templateUrl: './app.component.html',
 })
-export class AppComponent {}
+export class AppComponent {
+  private router = inject(Router);
+
+  // الدالة اللي تخلّي الـ Top Nav يخدم
+  navigate(path: string) {
+    this.router.navigate([path]);
+  }
+}

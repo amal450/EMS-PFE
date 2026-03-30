@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>EMS VOLT | Energy OS</title>
+  <title>Voltix EMS</title>
   <base href="/">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -10,8 +10,7 @@
       theme: {
         extend: {
           backgroundImage: {
-            // El alwan mta3 l'arrière plan dget (Rose/Violet/Blue)
-            'pfe-bg-soft': "linear-gradient(135deg, #fae8ff 0%, #f3f4ff 50%, #e0f2fe 100%)",
+            'os-bg': "linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 50%, #fae8ff 100%)",
           }
         }
       }
@@ -19,54 +18,14 @@
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-    
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      margin: 0;
-      background: #f5f3ff;
-      overflow: hidden;
-    }
-
-    /* Glassmorphism Effect - kima f-taswira */
-    .glass-sidebar {
-      background: rgba(15, 23, 42, 0.9); /* Navy Dark transparent */
-      backdrop-filter: blur(40px);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .glass-card-pro {
-      background: rgba(255, 255, 255, 0.4);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.02);
-    }
-
-    .metric-card {
-      border-radius: 2.5rem;
-      padding: 1.8rem;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 200px;
-    }
-    
-    /* El Alwan mta3 el 5 Cards dget */
-    .card-blue { background-color: #dbeafe; } /* Blue/Mint */
-    .card-lavender { background-color: #f3f4ff; } /* Tension */
-    .card-rose { background-color: #ffe4e6; } /* Intensity */
-    .card-teal { background-color: #ccfbf1; } /* Frequency */
-    .card-blue-dark { background-color: #d1edff; } /* Cos Phi */
-
-    .chart-line {
-      stroke: #f43f5e; /* Rose Line kima f-taswira */
-      stroke-width: 4;
-      fill: none;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; background: #fdf2f8; overflow: hidden; }
+    .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(20px); border: 1px solid white; border-radius: 3.5rem; }
+    .page-container { animation: slideUp 0.6s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-pfe-bg-soft">
+<body class="bg-os-bg">
   <app-root></app-root>
 </body>
 </html>

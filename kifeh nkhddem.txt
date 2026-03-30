@@ -15,7 +15,7 @@ git add .
 git commit -m "Fin de la Hiérarchie 5 niveaux et intégration du Simulateur"
 git push origin main
 --nhabbet m git
-f terminal PFE:git push origin main
+f terminal PFE: git pull origin main
 Bima ennou ?????? t-najjem t-koun zadt "bibliothèques" walla "tables" jdod, lazim dima ta3mel hédhom ba3d el pull:
 Rajja3 el packages jdod:
 7ill terminal f wast server w ekteb: npm install
@@ -28,3 +28,6 @@ Synchronizi el Base mte3ek (PostgreSQL):
 ---Awwil ma t-7ill el PC: A3mil git pull origin main (Bech tekhou a7sen version mta3 el koud).
 Akhdem khedmtek: Zid w baddel kima t7eb.
 Ki t-ji bech t-sakkar: A3mil git add . -> git commit -> git push. (Bech hiya t-najjem tekhou khedmtek ghodwa)
+
+----
+plantUML
