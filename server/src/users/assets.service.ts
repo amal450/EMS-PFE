@@ -49,4 +49,5 @@ export class AssetsService {
   async remove(id: number) {
     return await this.db.delete(schema.assets).where(eq(schema.assets.id, id));
   }
+  
 }

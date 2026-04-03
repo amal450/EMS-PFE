@@ -3,7 +3,6 @@ import { DATABASE_CONNECTION } from '../db/database.provider';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import * as schema from '../db/schema';
 import { eq } from 'drizzle-orm';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -12,40 +11,50 @@ export class UsersService {
     private db: NodePgDatabase<typeof schema>
   ) {}
 
-  // Afficher tous les users
   async findAll() {
     return await this.db.select().from(schema.users);
   }
 
-  // Créer un user
-async create(data: any) {
-  // السطر هذا يفكك الـ data وينحي الـ id لو كان موجود (حتى لو كان null)
-  const { id, ...userData } = data; 
-  
-  const hashedPassword = await bcrypt.hash(userData.password, 10);
-  
-  return await this.db.insert(schema.users).values({
-    username: userData.username,
-    email: userData.email,
-    password: userData.password,
-    role: userData.role || 'USER'
-  }).returning();
-}
+  async create(data: any) {
+    const { id, ...userData } = data; 
+    
+    // On insère le mot de passe DIRECTEMENT, sans hachage
+    return await this.db.insert(schema.users).values({
+      username: userData.username,
+      email: userData.email,
+      password: userData.password, 
+      role: userData.role || 'UTILISATEUR'
+    }).returning();
+  }
 
-  // --- EL FONCTION HÉDHI HIYA EL NA9SA ---
-async update(id: number, data: any) {
-  const { id: _, ...updateData } = data;
-  
-  // الباسورد تتعدى كيف ما هي
-  return await this.db.update(schema.users)
-    .set(updateData)
-    .where(eq(schema.users.id, id))
-    .returning();
-}
-  // Supprimer un user
+  async update(id: number, data: any) {
+    const { id: _, ...updateData } = data;
+    return await this.db.update(schema.users)
+      .set(updateData)
+      .where(eq(schema.users.id, id))
+      .returning();
+  }
+
   async remove(id: number) {
     return await this.db
       .delete(schema.users)
       .where(eq(schema.users.id, id));
+  }
+
+  async findByEmail(email: string) {
+    return await this.db.query.users.findFirst({
+      where: eq(schema.users.email, email)
+    });
+  }
+
+  // Comparaison directe (string === string)
+  async validatePassword(plain: string, stored: string): Promise<boolean> {
+    return plain === stored;
+  }
+  async updatePassword(id: number, password: string) {
+    return await this.db.update(schema.users)
+      .set({ password })
+      .where(eq(schema.users.id, id))
+      .returning();
   }
 }

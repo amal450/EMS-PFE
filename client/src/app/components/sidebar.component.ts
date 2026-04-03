@@ -1,93 +1,161 @@
 import { Component, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { AssetStateService } from '../services/asset-state.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './sidebar.component.html'
 })
 export class SidebarComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
-  
+  public authService = inject(AuthService);
+  public assetState = inject(AssetStateService);
+
+  // --- Signals ---
   hierarchy = signal<any[]>([]);
-  selectedId: number | null = null;
-  currentUser = { username: 'Amal', role: 'ADMIN' }; 
-
-  // Modals Add/Edit
-  showAssetModal = false;
-  isEditAssetMode = false;
-  assetForm = { id: null as number | null, name: '', type: '', parentId: null as number | null };
-
-  // Modal Delete
-  showDeleteAssetModal = false;
+  showAssetModal = signal(false);
+  isEditAssetMode = signal(false);
+  showDeleteAssetModal = signal(false);
+  assetForm = signal({ 
+    id: null as number | null, 
+    name: '', 
+    type: 'EQUIPEMENT', 
+    parentId: null as number | null 
+  });
   assetToDeleteId: number | null = null;
 
-  ngOnInit() { this.loadHierarchy(); }
+  ngOnInit() {
+    this.loadHierarchy();
+  }
 
   loadHierarchy() {
-    this.http.get<any[]>('http://localhost:3000/assets/tree').subscribe({
-      next: (res) => this.hierarchy.set(res),
-      error: () => console.log("Backend offline")
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    
+    this.http.get<any[]>('http://localhost:3000/assets/tree', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: res => this.hierarchy.set(res),
+      error: err => console.error('Erreur hiérarchie:', err)
     });
   }
 
-  // --- NAVIGATION ---
-  onNavigate(path: string, id?: number) {
-    if (id) {
-      this.selectedId = id;
-      this.router.navigate([path], { queryParams: { id: id } });
-    } else {
-      this.router.navigate([path]);
-    }
+  selectAsset(asset: any) {
+    this.assetState.setAsset(asset);
+    this.router.navigate(['/dashboard'], { queryParams: { id: asset.id } });
   }
-
-  selectAsset(asset: any) { this.onNavigate('dashboard', asset.id); }
 
   // --- CRUD HIERARCHY ---
-  
-  // Fonction bech tziid ay 7aja (TGBT, Armoire, Ligne, walla Equipement)
-  openAddSubAsset(parent: any, type: string) {
-    this.isEditAssetMode = false;
-    this.assetForm = { id: null, name: '', type: type, parentId: parent ? parent.id : null };
-    this.showAssetModal = true;
+  openAdd(parent: any, type: string) {
+    this.isEditAssetMode.set(false);
+    this.assetForm.set({ 
+      id: null, 
+      name: '', 
+      type: type, 
+      parentId: parent?.id || null 
+    });
+    this.showAssetModal.set(true);
   }
 
-  // Fonction bech t-modifier ay ka3ba (Site, Armoire, walla Ligne...)
-  openEditAsset(asset: any) {
-    this.isEditAssetMode = true;
-    this.assetForm = { id: asset.id, name: asset.name, type: asset.type, parentId: asset.parentId };
-    this.showAssetModal = true;
+  openEdit(asset: any) {
+    this.isEditAssetMode.set(true);
+    this.assetForm.set({ 
+      id: asset.id, 
+      name: asset.name, 
+      type: asset.type, 
+      parentId: asset.parentId 
+    });
+    this.showAssetModal.set(true);
   }
 
   saveAsset() {
-    if (this.isEditAssetMode) {
-      this.http.patch(`http://localhost:3000/assets/${this.assetForm.id}`, this.assetForm)
-        .subscribe(() => { this.loadHierarchy(); this.showAssetModal = false; });
-    } else {
-      const { id, ...data } = this.assetForm;
-      this.http.post('http://localhost:3000/assets', data)
-        .subscribe(() => { this.loadHierarchy(); this.showAssetModal = false; });
+    const form = this.assetForm();
+    const token = localStorage.getItem('auth_token');
+    
+    if (!form.name || !form.name.trim()) {
+      console.error('Le nom est requis');
+      return;
     }
-  }
-
-  // Confirmation Delete
-  askDeleteAsset(id: number) {
-    this.assetToDeleteId = id;
-    this.showDeleteAssetModal = true;
-  }
-
-  confirmDeleteAsset() {
-    if (this.assetToDeleteId) {
-      this.http.delete(`http://localhost:3000/assets/${this.assetToDeleteId}`).subscribe(() => {
-        this.loadHierarchy();
-        this.showDeleteAssetModal = false;
-        this.router.navigate(['/dashboard']);
+    
+    const options = {
+      headers: { Authorization: `Bearer ${token}` }
+    };
+    
+    if (this.isEditAssetMode()) {
+      // Mode modification
+      this.http.patch(`http://localhost:3000/assets/${form.id}`, form, options).subscribe({
+        next: () => {
+          this.loadHierarchy();
+          this.showAssetModal.set(false);
+          this.resetForm();
+        },
+        error: (err) => {
+          console.error('Erreur lors de la modification:', err);
+          alert('Erreur lors de la modification');
+        }
+      });
+    } else {
+      // Mode ajout
+      this.http.post('http://localhost:3000/assets', form, options).subscribe({
+        next: () => {
+          this.loadHierarchy();
+          this.showAssetModal.set(false);
+          this.resetForm();
+        },
+        error: (err) => {
+          console.error('Erreur lors de l\'ajout:', err);
+          alert('Erreur lors de l\'ajout');
+        }
       });
     }
+  }
+  
+  resetForm() {
+    this.assetForm.set({ 
+      id: null, 
+      name: '', 
+      type: 'EQUIPEMENT', 
+      parentId: null 
+    });
+  }
+
+  askDelete(id: number) {
+    this.assetToDeleteId = id;
+    this.showDeleteAssetModal.set(true);
+  }
+
+  confirmDelete() {
+    if (!this.assetToDeleteId) return;
+    
+    const token = localStorage.getItem('auth_token');
+    this.http.delete(`http://localhost:3000/assets/${this.assetToDeleteId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: () => {
+        this.loadHierarchy();
+        this.showDeleteAssetModal.set(false);
+        this.assetToDeleteId = null;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression:', err);
+        alert('Erreur lors de la suppression');
+      }
+    });
+  }
+
+  navigateTo(route: string) {
+    this.router.navigate([`/${route}`]);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

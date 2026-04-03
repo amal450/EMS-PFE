@@ -40,6 +40,14 @@ export class AssetsService {
     return await this.db.insert(schema.assets).values(cleanData).returning();
   }
 
+  async update(id: number, data: any) {
+    const { id: _, children, ...updateData } = data;
+    return await this.db.update(schema.assets)
+      .set(updateData)
+      .where(eq(schema.assets.id, id))
+      .returning();
+  }
+  
   async remove(id: number) {
     return await this.db.delete(schema.assets).where(eq(schema.assets.id, id));
   }

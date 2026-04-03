@@ -1,6 +1,6 @@
 --khaddem server:
 cd server
-npm run start:dev
+npm run start:dev // ken teblooka : Get-Process -Id (Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue).OwningProcess -ErrorAction SilentlyContinue | Stop-Process -Force
 --khddem client 'interface'
 cd client
 ng serve

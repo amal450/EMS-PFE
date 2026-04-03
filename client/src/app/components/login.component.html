@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4 relative overflow-hidden">
+  <!-- Animated Background Elements -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="relative z-10 w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8 animate-in fade-in slide-in-from-top duration-700">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-lg mb-4">
+        <span class="text-3xl">⚡</span>
+      </div>
+      <h1 class="text-3xl font-black text-white tracking-tight">EMS</h1>
+      <p class="text-blue-100 text-sm mt-1">Energy Management System</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in slide-in-from-bottom duration-700">
+      <!-- Tabs -->
+      <div class="flex gap-2 mb-8 bg-gray-100 rounded-xl p-1">
+        <button
+          (click)="toggleMode()"
+          [class.bg-white]="!isRegisterMode()"
+          [class.shadow]="!isRegisterMode()"
+          class="flex-1 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+          [ngClass]="!isRegisterMode() ? 'text-blue-600' : 'text-gray-600'"
+        >
+          Connexion
+        </button>
+        
+      </div>
+
+      <!-- Form -->
+      <form (ngSubmit)="isRegisterMode() ? register() : login()" class="space-y-4">
+        <!-- Register Name (Conditional) -->
+        <div *ngIf="isRegisterMode()" class="animate-in fade-in duration-300">
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Nom complet</label>
+          <input
+            type="text"
+            [(ngModel)]="registerName"
+            name="name"
+            placeholder="Votre nom"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="votre@email.com"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="errorMessage()" class="bg-red-50 border-2 border-red-200 rounded-xl p-3 animate-in fade-in duration-300">
+          <p class="text-red-700 text-sm font-semibold">{{ errorMessage() }}</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="!isLoading()">
+            {{ isRegisterMode() ? 'S\'inscrire' : 'Se connecter' }}
+          </span>
+          <span *ngIf="isLoading()" class="flex items-center justify-center gap-2">
+            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            Chargement...
+          </span>
+        </button>
+      </form>
+
+      <!-- Demo Users (Optional) -->
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <p class="text-xs text-gray-500 text-center mb-3">Comptes de démonstration:</p>
+        <div class="space-y-2 text-xs">
+          <p class="text-gray-600">
+            <strong>Admin:</strong> admin@ems.com / password123
+          </p>
+          <p class="text-gray-600">
+            <strong>Utilisateur:</strong> user@ems.com / password123
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-white text-xs mt-6 opacity-80">
+      © 2026 EMS - Système de Gestion d'Énergie. Tous droits réservés.
+    </p>
+  </div>
+</div>

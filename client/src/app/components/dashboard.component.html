@@ -1,189 +1,186 @@
-<style>
-  /* Style Global Dashboard Premium */
-  .card-premium { 
-    border-radius: 5rem; 
-    padding: 3rem 1.5rem; 
-    height: 520px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-    border: 1px solid rgb(255, 255, 255); 
-    box-shadow: 0 15px 35px rgba(0,0,0,0.03); 
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .card-premium:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.06);
-  }
+<div class="w-full h-full p-8 bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-y-auto">
 
-  /* Couleurs Pastels Douces */
-  .c-mint { background: linear-gradient(135deg, #e2f3ec 0%, #ffffff 100%); }      
-  .c-lavender { background: linear-gradient(135deg, #e9eefb 0%, #ffffff 100%); }  
-  .c-rose { background: linear-gradient(135deg, #fceae9 0%, #ffffff 100%); }      
-  .c-teal { background: linear-gradient(135deg, #e2f3f1 0%, #ffffff 100%); }      
-  .c-sky { background: linear-gradient(135deg, #e4f1f9 0%, #ffffff 100%); }
-
-  /* Typographie */
-  .val-huge { 
-    font-weight: 900; 
-    font-size: 5rem; 
-    color: #0f172a; 
-    letter-spacing: -4px; 
-    line-height: 0.8; 
-    margin: 2rem 0;
-  }
-  
-  .unit-label { font-size: 1.2rem; color: #94a3b8; font-weight: 600; letter-spacing: 0; }
-  
-  .icon-box {
-    width: 70px;
-    height: 70px;
-    background: white;
-    border-radius: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.8rem;
-    shadow: 0 10px 20px rgba(0,0,0,0.05);
-    margin-bottom: 2rem;
-  }
-
-  .data-row {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 1.2rem;
-    border-bottom: 1px solid rgba(0,0,0,0.04);
-  }
-  
-  .data-row:last-child { border-bottom: none; }
-  
-  .label-mini { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
-  .value-mini { font-size: 14px; font-weight: 900; color: #1e293b; }
-
-  .status-badge {
-    background: rgba(255,255,255,0.7);
-    padding: 0.6rem 1.2rem;
-    border-radius: 2rem;
-    font-size: 9px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: auto;
-  }
-</style>
-
-<div class="space-y-12 pb-16">
-  
-  <!-- Header Title (Style épuré Image 2) -->
-  <div class="pl-8 pt-6">
-    <div class="flex items-center gap-3 mb-4">
-        <span class="relative flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-        </span>
-        <p class="text-emerald-600 font-black text-[11px] uppercase tracking-[0.5em]">Live Monitoring System</p>
+  <!-- Header avec titre et infos -->
+  <div class="mb-12">
+    <div class="flex items-baseline gap-3 mb-3">
+      <h1 class="text-5xl font-black text-slate-900">
+        {{ selectedAsset?.name || 'Sélectionnez un équipement' }}
+      </h1>
     </div>
-    <h2 class="text-8xl font-black tracking-tighter text-slate-900 leading-[0.85] italic">
-      {{ selectedAsset?.name || 'Campus Innovation' }}
-    </h2>
-    <div class="flex gap-4 mt-6">
-        <span class="px-4 py-1.5 bg-slate-100 rounded-full text-[10px] font-black text-slate-400 uppercase tracking-widest italic">Node: #00{{selectedAsset?.id}}</span>
-        <span class="px-4 py-1.5 bg-blue-50 rounded-full text-[10px] font-black text-blue-500 uppercase tracking-widest italic">Type: {{selectedAsset?.type}}</span>
+    <div class="flex items-center gap-8 text-slate-600" *ngIf="selectedAsset">
+      <p class="text-sm font-semibold uppercase tracking-wide">
+        <span class="text-slate-400">NODE:</span>
+        <span class="font-black">#{{ selectedAsset.id }}</span>
+      </p>
+      <p class="text-sm font-semibold uppercase tracking-wide">
+        <span class="text-slate-400">TYPE:</span>
+        <span class="font-black text-blue-600">{{ selectedAsset.type }}</span>
+      </p>
     </div>
   </div>
 
-  <!-- KPI GRID (5 Capsules Premium) -->
-  <div class="grid grid-cols-5 gap-8 px-4">
-    
-    <!-- 1. Puissance -->
-    <div class="card-premium c-mint group">
-      <div class="icon-box group-hover:rotate-12 transition-transform">⚡</div>
-      <p class="label-mini opacity-60">Puissance Active</p>
-      <h4 class="val-huge">{{ liveData().power }}<span class="unit-label">KW</span></h4>
-      <div class="status-badge text-emerald-600 border border-emerald-100">↑ Aggrégation Active</div>
-    </div>
+  <!-- Grid 5 cartes principales -->
+  <div class="grid grid-cols-5 gap-5 mb-10">
 
-    <!-- 2. Tension (Détails Image 1 avec Style Image 2) -->
-    <div class="card-premium c-lavender">
-      <div class="icon-box">📈</div>
-      <p class="label-mini opacity-60 mb-4">Tensions Réseau</p>
-      <div class="w-full space-y-1 px-2">
-          <div class="data-row"><span class="label-mini">V1</span><span class="value-mini">{{liveData().v1}}V</span></div>
-          <div class="data-row"><span class="label-mini">U12</span><span class="value-mini">{{liveData().u1}}V</span></div>
-          <div class="data-row"><span class="label-mini">V2</span><span class="value-mini">{{liveData().v2}}V</span></div>
-          <div class="data-row"><span class="label-mini">U22</span><span class="value-mini">{{liveData().u2}}V</span></div>
-          <div class="data-row"><span class="label-mini">V3</span><span class="value-mini">{{liveData().v3}}V</span></div>
-          <div class="data-row"><span class="label-mini">U31</span><span class="value-mini">{{liveData().u3}}V</span></div>
+    <!-- Puissance Active -->
+    <div class="group bg-gradient-to-br from-emerald-50 to-white rounded-3xl p-8 border border-emerald-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">⚡</div>
+        <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">+2.3%</span>
+      </div>
+      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Puissance<br>Active</p>
+      <div class="mb-4">
+        <div class="flex items-baseline gap-2">
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().power }}</span>
+          <span class="text-xs text-slate-500 font-bold">KW</span>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <div *ngFor="let i of [50,55,60,65,70,75,80]" class="h-1 bg-emerald-400 rounded-full flex-1"></div>
       </div>
     </div>
 
-    <!-- 3. Intensité (Détails Image 1 avec Style Image 2) -->
-    <div class="card-premium c-rose">
-      <div class="icon-box">📱</div>
-      <p class="label-mini opacity-60 mb-6">Intensité Phases</p>
-      <div class="w-full space-y-4 px-4">
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between items-center"><span class="label-mini">Phase L1</span><span class="text-2xl font-black text-slate-800">{{liveData().i1}}A</span></div>
-            <div class="h-1.5 w-full bg-rose-200/40 rounded-full overflow-hidden"><div class="h-full bg-rose-500 rounded-full" [style.width.%]="liveData().i1"></div></div>
-          </div>
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between items-center"><span class="label-mini">Phase L2</span><span class="text-2xl font-black text-slate-800">{{liveData().i2}}A</span></div>
-            <div class="h-1.5 w-full bg-rose-200/40 rounded-full overflow-hidden"><div class="h-full bg-rose-500 rounded-full" [style.width.%]="liveData().i2"></div></div>
-          </div>
-          <div class="flex flex-col gap-1">
-            <div class="flex justify-between items-center"><span class="label-mini">Phase L3</span><span class="text-2xl font-black text-slate-800">{{liveData().i3}}A</span></div>
-            <div class="h-1.5 w-full bg-rose-200/40 rounded-full overflow-hidden"><div class="h-full bg-rose-500 rounded-full" [style.width.%]="liveData().i3"></div></div>
-          </div>
+    <!-- Énergie Totale -->
+    <div class="group bg-gradient-to-br from-teal-50 to-white rounded-3xl p-8 border border-teal-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-14 h-14 bg-teal-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">📈</div>
+        <span class="text-[10px] font-bold text-teal-600 uppercase tracking-widest">+5.1%</span>
+      </div>
+      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Énergie<br>Totale</p>
+      <div class="mb-4">
+        <div class="flex items-baseline gap-2">
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().i1 }}</span>
+          <span class="text-xs text-slate-500 font-bold">KWH</span>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <div *ngFor="let i of [45,50,55,60,65,70,75]" class="h-1 bg-teal-400 rounded-full flex-1"></div>
       </div>
     </div>
 
-    <!-- 4. Fréquence -->
-    <div class="card-premium c-teal">
-      <div class="icon-box">📡</div>
-      <p class="label-mini opacity-60">Fréquence Stable</p>
-      <h4 class="val-huge">{{ liveData().frequency }}<span class="unit-label">Hz</span></h4>
-      <div class="status-badge text-teal-600 border border-teal-100 italic">Stable Grid Control</div>
+    <!-- Cos Φ -->
+    <div class="group bg-gradient-to-br from-violet-50 to-white rounded-3xl p-8 border border-violet-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">⚙️</div>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">—</span>
+      </div>
+      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Cos<br>Φ</p>
+      <div class="mb-4">
+        <div class="flex items-baseline gap-2">
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().cosPhi }}</span>
+          <span class="text-xs text-slate-500 font-bold">PF</span>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <div *ngFor="let i of [30,40,50,60,70,80,90]" class="h-1 bg-violet-400 rounded-full flex-1"></div>
+      </div>
     </div>
 
-    <!-- 5. Cos Phi -->
-    <div class="card-premium c-sky">
-      <div class="icon-box">🎯</div>
-      <p class="label-mini opacity-60">Facteur Cos Φ</p>
-      <h4 class="val-huge">{{ liveData().cosPhi }}<span class="unit-label">PF</span></h4>
-      <div class="status-badge text-sky-600 border border-sky-100 italic">Phase Optimized</div>
+    <!-- Fréquence -->
+    <div class="group bg-gradient-to-br from-blue-50 to-white rounded-3xl p-8 border border-blue-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">〰️</div>
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">—</span>
+      </div>
+      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Fréquence</p>
+      <div class="mb-4">
+        <div class="flex items-baseline gap-2">
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().frequency }}</span>
+          <span class="text-xs text-slate-500 font-bold">HZ</span>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <div *ngFor="let i of [48,49,50,49,50,51,50]" class="h-1 bg-blue-400 rounded-full flex-1"></div>
+      </div>
     </div>
+
+    <!-- Status Live -->
+    <div class="group bg-gradient-to-br from-white to-slate-50 rounded-3xl p-8 border-2 border-green-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 flex flex-col items-center justify-center gap-4">
+      <div class="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-50 rounded-full flex items-center justify-center border-4 border-green-200">
+        <span class="w-8 h-8 bg-green-500 rounded-full animate-pulse shadow-lg shadow-green-500/50"></span>
+      </div>
+      <div class="text-center">
+        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Status</p>
+        <p class="text-sm font-black text-green-600">● CONNECTÉ</p>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Lower Section (Flux + Alertes Style Image 2) -->
-  <div class="grid grid-cols-3 gap-10 px-4">
-      <div class="col-span-2 bg-white p-12 rounded-[5rem] shadow-2xl border border-slate-50 min-h-[450px] flex flex-col justify-between">
-          <div class="flex justify-between items-center">
-            <h3 class="text-4xl font-black text-slate-900 tracking-tighter uppercase italic">Flux Énergétique</h3>
-            <button class="px-6 py-2 bg-slate-50 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest hover:bg-slate-100 transition-all">Consulter kWh</button>
+  <!-- Section Tensions et Courants -->
+  <div class="grid grid-cols-2 gap-6">
+
+    <!-- Tensions -->
+    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+      <h2 class="text-lg font-black text-slate-900 mb-8 flex items-center gap-2">
+        <span class="text-2xl">⚡</span>
+        Tension (V)
+      </h2>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Simple -->
+        <div class="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-6 border border-blue-100">
+          <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-4">Simple</p>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V1</span><span class="text-lg font-black text-blue-600">{{ liveData().v1 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V2</span><span class="text-lg font-black text-slate-400">{{ liveData().v2 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V3</span><span class="text-lg font-black text-slate-400">{{ liveData().v3 }}</span></div>
           </div>
-          <!-- Graph Placeholder -->
-          <div class="flex-1 mt-8 bg-slate-50/50 rounded-[3rem] border border-dashed border-slate-200 flex items-center justify-center">
-            <p class="text-[10px] font-black text-slate-300 uppercase tracking-[0.5em]">Analytics Engine Ready</p>
+        </div>
+
+        <!-- Composée -->
+        <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-100">
+          <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-4">Composée</p>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U1</span><span class="text-lg font-black text-slate-800">{{ liveData().u1 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U2</span><span class="text-lg font-black text-slate-400">{{ liveData().u2 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U3</span><span class="text-lg font-black text-slate-400">{{ liveData().u3 }}</span></div>
           </div>
+        </div>
       </div>
 
-      <div class="bg-white p-10 rounded-[5rem] shadow-2xl border border-slate-50 flex flex-col">
-          <h3 class="text-xl font-black text-slate-900 uppercase tracking-[0.4em] mb-10 text-center">Alertes Actives</h3>
-          <div class="space-y-4">
-              <div class="bg-rose-50/50 p-6 rounded-[3rem] border border-rose-100 flex items-center gap-6 group hover:bg-rose-100 transition-all cursor-pointer">
-                  <div class="w-14 h-14 bg-[#be123c] rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg italic font-black">!</div>
-                  <div>
-                    <p class="text-xs font-black text-slate-900 uppercase leading-none">Surcharge L1</p>
-                    <p class="text-[9px] font-bold text-rose-600 mt-2 uppercase tracking-tighter">Phase Critique • Détecté à l'instant</p>
-                  </div>
-              </div>
-          </div>
-          <p class="text-center mt-auto text-[9px] font-bold text-slate-300 uppercase tracking-widest">Aucune autre alerte</p>
+      <div class="mt-6 pt-4 border-t border-slate-100 flex justify-center">
+        <span class="text-[9px] font-bold text-slate-400 uppercase">● LIVE</span>
       </div>
+    </div>
+
+    <!-- Courants -->
+    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+      <h2 class="text-lg font-black text-slate-900 mb-8 flex items-center gap-2">
+        <span class="text-2xl">🔌</span>
+        Courant (A)
+      </h2>
+
+      <div class="space-y-5">
+        <!-- I1 -->
+        <div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I1</span><span class="text-sm font-black text-slate-900">{{ liveData().i1 }}</span></div>
+          <div class="h-3 bg-blue-100 rounded-full overflow-hidden border border-blue-200">
+            <div class="h-full bg-gradient-to-r from-blue-500 to-blue-600" [style.width.%]="89"></div>
+          </div>
+        </div>
+
+        <!-- I2 -->
+        <div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I2</span><span class="text-sm font-black text-slate-900">{{ liveData().i2 }}</span></div>
+          <div class="h-3 bg-green-100 rounded-full overflow-hidden border border-green-200">
+            <div class="h-full bg-gradient-to-r from-green-500 to-green-600" [style.width.%]="79"></div>
+          </div>
+        </div>
+
+        <!-- I3 -->
+        <div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I3</span><span class="text-sm font-black text-slate-900">{{ liveData().i3 }}</span></div>
+          <div class="h-3 bg-purple-100 rounded-full overflow-hidden border border-purple-200">
+            <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600" [style.width.%]="89"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100 flex justify-center">
+        <span class="text-[9px] font-bold text-slate-400 uppercase">● LIVE</span>
+      </div>
+    </div>
+
   </div>
 </div>

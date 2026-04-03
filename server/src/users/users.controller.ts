@@ -13,7 +13,11 @@ export class UsersController { // <--- لازم يكون اسمها UsersControl
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() data: any) { return this.usersService.update(+id, data); }
-
+   
+  @Patch(':id/password')
+  updatePassword(@Param('id') id: string, @Body() body: { password: string }) {
+    return this.usersService.updatePassword(+id, body.password);
+  }
   @Delete(':id')
   remove(@Param('id') id: string) { return this.usersService.remove(+id); }
 }

@@ -1,30 +1,190 @@
-<div class="max-w-3xl mx-auto bg-white p-20 rounded-[5rem] shadow-2xl mt-16 animate-in slide-in-from-bottom duration-1000 border border-slate-50">
-  <div class="text-center mb-16">
-    <div class="w-24 h-24 bg-gradient-to-tr from-slate-900 to-slate-700 rounded-[2.5rem] mx-auto mb-6 flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-slate-200">
-        {{currentUser.username[0].toUpperCase()}}
+<div class="w-full h-full p-8 overflow-y-auto bg-gradient-to-br from-slate-50 via-white to-slate-50">
+  
+  <!-- Header avec effet glassmorphisme -->
+  <div class="relative mb-12">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-3xl blur-3xl"></div>
+    <div class="relative text-center">
+      <div class="relative inline-block">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-xl opacity-50"></div>
+        <div class="relative w-28 h-28 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-2xl mb-6 flex items-center justify-center transform transition-transform hover:scale-105 duration-300">
+          <span class="text-5xl text-white font-black">{{ currentUser.username.charAt(0).toUpperCase() || 'U' }}</span>
+        </div>
+        <div class="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-white shadow-lg"></div>
+      </div>
+      <h1 class="text-5xl font-black bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-3">Mon Profil</h1>
+      <p class="text-sm text-slate-500 font-medium">Gérez vos informations personnelles et sécurisez votre compte</p>
     </div>
-    <h2 class="text-6xl font-black tracking-tighter text-slate-900 italic">Paramètres</h2>
-    <p class="text-slate-300 font-bold uppercase text-[10px] tracking-[0.4em] mt-2">Gestion de l'identité système</p>
   </div>
 
-  <div class="space-y-10">
-    <div class="group">
-      <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 block group-focus-within:text-rose-600 transition-colors ml-4">Nom d'utilisateur</label>
-      <input [(ngModel)]="currentUser.username" 
-             class="w-full bg-slate-50 border-none p-7 rounded-[2.5rem] text-2xl font-black text-slate-800 outline-none focus:ring-8 ring-slate-100 transition-all shadow-inner">
+  <div class="max-w-3xl mx-auto">
+    <!-- Cartes Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+            <span class="text-2xl">👤</span>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Membre depuis</p>
+            <p class="text-sm font-bold text-slate-800">{{ (currentUser.createdAt | date:'MMMM yyyy') || '2024' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
+            <span class="text-2xl">🎯</span>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Rôle</p>
+            <p class="text-sm font-bold text-slate-800">{{ getRoleLabel(currentUser.role) }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-5 shadow-lg border border-slate-100 hover:shadow-xl transition-all duration-300">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center">
+            <span class="text-2xl">🔒</span>
+          </div>
+          <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Sécurité</p>
+            <p class="text-sm font-bold text-slate-800">Protégé</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="group">
-      <label class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 block group-focus-within:text-rose-600 transition-colors ml-4">Email de contact</label>
-      <input [(ngModel)]="currentUser.email" 
-             class="w-full bg-slate-50 border-none p-7 rounded-[2.5rem] text-2xl font-black text-slate-800 outline-none focus:ring-8 ring-slate-100 transition-all shadow-inner">
+    <!-- Messages -->
+    <div *ngIf="successMessage()" class="mb-6 p-4 bg-emerald-50 border-l-4 border-emerald-500 rounded-xl">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">✅</span>
+        <p class="text-emerald-700 text-sm font-semibold">{{ successMessage() }}</p>
+      </div>
+    </div>
+    
+    <div *ngIf="errorMessage()" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">❌</span>
+        <p class="text-red-700 text-sm font-semibold">{{ errorMessage() }}</p>
+      </div>
     </div>
 
-    <div class="pt-10">
-      <button (click)="updateProfile()" 
-              class="w-full bg-slate-900 text-white py-8 rounded-[3rem] font-black text-xs uppercase tracking-[0.5em] shadow-2xl hover:bg-rose-600 hover:scale-[1.03] active:scale-95 transition-all">
-        Mettre à jour le profil
-      </button>
+    <!-- Formulaire Profil -->
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mb-8">
+      <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-8 py-5">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">📝</span>
+          <h2 class="text-lg font-bold text-slate-800">Informations générales</h2>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Modifiez vos informations personnelles</p>
+      </div>
+      
+      <form (ngSubmit)="updateProfile()" class="p-8 space-y-6">
+        <div class="group">
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider block mb-2 group-focus-within:text-blue-600 transition-colors">
+            <span class="mr-2">👤</span> Nom d'utilisateur
+          </label>
+          <input type="text" [(ngModel)]="currentUser.username" name="username"
+            class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all font-medium text-slate-800">
+        </div>
+        
+        <div class="group">
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider block mb-2 group-focus-within:text-blue-600 transition-colors">
+            <span class="mr-2">✉️</span> Adresse email
+          </label>
+          <input type="email" [(ngModel)]="currentUser.email" name="email"
+            class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all font-medium text-slate-800">
+        </div>
+        
+        <div class="group">
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider block mb-2">
+            <span class="mr-2">🎖️</span> Rôle
+          </label>
+          <div class="relative">
+            <input type="text" [value]="getRoleLabel(currentUser.role)" disabled
+              class="w-full px-5 py-4 bg-slate-100 border-2 border-slate-200 rounded-2xl text-slate-600 font-medium cursor-not-allowed">
+            <div class="absolute right-5 top-1/2 -translate-y-1/2">
+              <span class="text-sm" *ngIf="currentUser.role === 'ADMIN'">👑</span>
+              <span class="text-sm" *ngIf="currentUser.role === 'RESPONSABLE_ENERGIE'">⚡</span>
+              <span class="text-sm" *ngIf="currentUser.role === 'UTILISATEUR'">👤</span>
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" [disabled]="isLoading()"
+          class="w-full py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-sm uppercase tracking-wider hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!isLoading()" class="flex items-center justify-center gap-2">
+            <span>💾</span>
+            Mettre à jour mon profil
+          </span>
+          <span *ngIf="isLoading()" class="flex items-center justify-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Mise à jour...
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Section Changement mot de passe -->
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+      <div class="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-8 py-5">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🔐</span>
+          <h2 class="text-lg font-bold text-slate-800">Sécurité du compte</h2>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-1">Changez votre mot de passe régulièrement</p>
+      </div>
+      
+      <div class="p-8 space-y-6">
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider block mb-2">
+            <span class="mr-2">🔑</span> Nouveau mot de passe
+          </label>
+          <div class="relative">
+            <input [type]="showNewPassword() ? 'text' : 'password'" [(ngModel)]="newPassword" 
+              placeholder="Entrez votre nouveau mot de passe"
+              class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all font-medium pr-12">
+            <button type="button" (click)="toggleNewPasswordVisibility()" 
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors text-xl">
+              {{ showNewPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          <p class="text-[9px] text-slate-400 mt-2">Minimum 6 caractères</p>
+        </div>
+        
+        <div>
+          <label class="text-[11px] font-black text-slate-500 uppercase tracking-wider block mb-2">
+            <span class="mr-2">✅</span> Confirmer le mot de passe
+          </label>
+          <div class="relative">
+            <input [type]="showConfirmPassword() ? 'text' : 'password'" [(ngModel)]="confirmPassword" 
+              placeholder="Confirmez votre nouveau mot de passe"
+              class="w-full px-5 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:bg-white focus:outline-none transition-all font-medium pr-12">
+            <button type="button" (click)="toggleConfirmPasswordVisibility()" 
+              class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors text-xl">
+              {{ showConfirmPassword() ? '🙈' : '👁️' }}
+            </button>
+          </div>
+        </div>
+        
+        <button (click)="changePassword()" [disabled]="isPasswordLoading()"
+          class="w-full py-4 rounded-2xl bg-gradient-to-r from-slate-700 to-slate-900 text-white font-bold text-sm uppercase tracking-wider hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!isPasswordLoading()" class="flex items-center justify-center gap-2">
+            <span>🔄</span>
+            Changer le mot de passe
+          </span>
+          <span *ngIf="isPasswordLoading()" class="flex items-center justify-center gap-2">
+            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Changement...
+          </span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
