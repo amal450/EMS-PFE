@@ -19,14 +19,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   selectedAsset: any = null;
   private monitorInterval: any;
 
-  // Signal pour les mesures en live
   liveData = signal({ 
-    power: '0.00', 
-    i1: '0.0', i2: '0.0', i3: '0.0', 
-    v1: '000', v2: '000', v3: '000', 
-    u1: '000', u2: '000', u3: '000',
-    frequency: '50.00',
-    cosPhi: '0.00',
+    V1N: '000', V2N: '000', V3N: '000', 
+    V12: '000', V23: '000', V31: '000',
+    I1: '0.0', I2: '0.0', I3: '0.0', 
+    TKW: '0.00', 
+    IKWH: '0.00', 
+    HZ: '00.00',
+    PF: '0.00',
+    KVAH: '0.00',
     timestamp: new Date()
   });
 
@@ -46,10 +47,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private resetLiveData() {
     this.zone.run(() => {
       this.liveData.set({ 
-        power: '0.00', i1: '0.0', i2: '0.0', i3: '0.0', 
-        v1: '000', v2: '000', v3: '000', 
-        u1: '000', u2: '000', u3: '000',
-        frequency: '00.00', cosPhi: '0.00', 
+        V1N: '000', V2N: '000', V3N: '000', 
+        V12: '000', V23: '000', V31: '000',
+        I1: '0.0', I2: '0.0', I3: '0.0', 
+        TKW: '0.00', IKWH: '0.00', HZ: '00.00', PF: '0.00', KVAH: '0.00',
         timestamp: new Date() 
       });
     });
@@ -89,22 +90,44 @@ export class DashboardComponent implements OnInit, OnDestroy {
         next: (res) => {
           this.zone.run(() => {
             if (res) {
-              this.liveData.set(res);
+              // Utilisation DIRECTE des majuscules retournées par le service
+              this.liveData.set({
+                V1N: res.V1N || '000',
+                V2N: res.V2N || '000',
+                V3N: res.V3N || '000',
+                V12: res.V12 || '000',
+                V23: res.V23 || '000',
+                V31: res.V31 || '000',
+                I1: res.I1 || '0.0',
+                I2: res.I2 || '0.0',
+                I3: res.I3 || '0.0',
+                TKW: res.TKW || '0.00',
+                IKWH: res.IKWH || '0.00',
+                KVAH: res.KVAH || '0.00',
+                HZ: res.HZ || '00.00',
+                PF: res.PF || '0.00',
+                timestamp: res.timestamp || new Date()
+              });
+              
+              console.log('✅ Données reçues:', {
+                V1N: res.V1N, V2N: res.V2N, V3N: res.V3N,
+                I1: res.I1, I2: res.I2, I3: res.I3,
+                TKW: res.TKW, PF: res.PF, HZ: res.HZ
+              });
             } else {
               this.resetLiveData();
             }
           });
         },
         error: (err) => {
+          console.log('⏳ En attente des données du simulateur...');
           this.zone.run(() => this.resetLiveData());
           if (err.status === 401) {
             console.error('401 Unauthorized – vérifie ton token ou login');
-          } else {
-            console.warn('Attente données du simulateur...', err);
           }
         }
       });
-    }, 1000);
+    }, 2000);
   }
 
   ngOnDestroy() {

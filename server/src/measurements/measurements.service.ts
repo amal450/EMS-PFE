@@ -31,32 +31,50 @@ export class MeasurementsService {
     );
 
     const validData = latestRecords.filter(r => r != null);
+    
+    // CAS 1 : Aucune donnée trouvée (Génère des zéros avec les nouveaux noms)
     if (validData.length === 0) {
       return {
-      assetId: assetId,
-      power: '0.00', i1: '0.0', i2: '0.0', i3: '0.0',
-      v1: '000', v2: '000', v3: '000', u1: '000', u2: '000', u3: '000',
-      frequency: '00.00', cosPhi: '0.00', timestamp: new Date()
+        assetId: assetId,
+        V1N: '000', V2N: '000', V3N: '000',
+        V12: '000', V23: '000', V31: '000',
+        I1: '0.0', I2: '0.0', I3: '0.0',
+        TKW: '0.00', IKWH: '0.00', HZ: '00.00', PF: '0.00', KVAH: '0.00',
+        timestamp: new Date()
       };
     }
 
+    // CAS 2 : Agrégation (Sommes pour les puissances, cumul pour préparer les moyennes)
     const agg = validData.reduce((acc, curr) => ({
-      power: acc.power + (curr.power || 0),
-      i1: acc.i1 + (curr.i1 || 0), i2: acc.i2 + (curr.i2 || 0), i3: acc.i3 + (curr.i3 || 0),
-      v1: acc.v1 + (curr.v1 || 0), v2: acc.v2 + (curr.v2 || 0), v3: acc.v3 + (curr.v3 || 0),
-      u1: acc.u1 + (curr.u1 || 0), u2: acc.u2 + (curr.u2 || 0), u3: acc.u3 + (curr.u3 || 0),
-      freq: acc.freq + (curr.frequency || 0),
-      cos: acc.cos + (curr.cosPhi || 0),
+      V1N: acc.V1N + (curr.V1N || 0), V2N: acc.V2N + (curr.V2N || 0), V3N: acc.V3N + (curr.V3N || 0),
+      V12: acc.V12 + (curr.V12 || 0), V23: acc.V23 + (curr.V23 || 0), V31: acc.V31 + (curr.V31 || 0),
+      I1: acc.I1 + (curr.I1 || 0), I2: acc.I2 + (curr.I2 || 0), I3: acc.I3 + (curr.I3 || 0),
+      HZ: acc.HZ + (curr.HZ || 0), PF: acc.PF + (curr.PF || 0),
+      TKW: acc.TKW + (curr.TKW || 0), // Les puissances/énergies sont additionnées
+      IKWH: acc.IKWH + (curr.IKWH || 0),
+      KVAH: acc.KVAH + (curr.KVAH || 0),
       count: acc.count + 1
-    }), { power: 0, i1:0, i2:0, i3:0, v1:0, v2:0, v3:0, u1:0, u2:0, u3:0, freq:0, cos:0, count: 0 });
+    }), { 
+      V1N: 0, V2N: 0, V3N: 0, V12: 0, V23: 0, V31: 0, 
+      I1: 0, I2: 0, I3: 0, HZ: 0, PF: 0, TKW: 0, IKWH: 0, KVAH: 0, count: 0 
+    });
 
+    // CAS 3 : Retourne le résultat final (Moyennes pour tensions/courants, sommes pour énergie)
     return {
-      power: agg.power.toFixed(2),
-      i1: (agg.i1 / agg.count).toFixed(1), i2: (agg.i2 / agg.count).toFixed(1), i3: (agg.i3 / agg.count).toFixed(1),
-      v1: (agg.v1 / agg.count).toFixed(1), v2: (agg.v2 / agg.count).toFixed(1), v3: (agg.v3 / agg.count).toFixed(1),
-      u1: (agg.u1 / agg.count).toFixed(1), u2: (agg.u2 / agg.count).toFixed(1), u3: (agg.u3 / agg.count).toFixed(1),
-      frequency: (agg.freq / agg.count).toFixed(2),
-      cosPhi: (agg.cos / agg.count).toFixed(2), 
+      V1N: (agg.V1N / agg.count).toFixed(1),
+      V2N: (agg.V2N / agg.count).toFixed(1),
+      V3N: (agg.V3N / agg.count).toFixed(1),
+      V12: (agg.V12 / agg.count).toFixed(1),
+      V23: (agg.V23 / agg.count).toFixed(1),
+      V31: (agg.V31 / agg.count).toFixed(1),
+      I1: (agg.I1 / agg.count).toFixed(1),
+      I2: (agg.I2 / agg.count).toFixed(1),
+      I3: (agg.I3 / agg.count).toFixed(1),
+      HZ: (agg.HZ / agg.count).toFixed(2),
+      PF: (agg.PF / agg.count).toFixed(2),
+      TKW: agg.TKW.toFixed(2),     // Pas de division, c'est la somme totale
+      IKWH: agg.IKWH.toFixed(2),   // Pas de division
+      KVAH: agg.KVAH.toFixed(2),   // Pas de division
       timestamp: validData[0].timestamp
     };
   }

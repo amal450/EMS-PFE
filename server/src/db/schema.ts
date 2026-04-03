@@ -1,4 +1,4 @@
-import { pgTable, serial, text, integer, timestamp, doublePrecision, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, integer, timestamp, doublePrecision, pgEnum, varchar } from "drizzle-orm/pg-core";
 
 // Enums kima 9bal
 export const roleEnum = pgEnum("role", ["RESPONSABLE_ENERGIE", "UTILISATEUR", "ADMIN"]);
@@ -17,21 +17,35 @@ export const assets = pgTable("assets", {
   name: text("name").notNull(),
   type: text("type").notNull(), 
   parentId: integer("parent_id"), 
+  webSocketLink: varchar("websocketlink", { length: 255 }), // <-- AJOUT DU LIEN WEBSOCKET
 });
 
-// --- EL MODIFICATION HOUNI: 12 Metrics ---
+// --- EL MODIFICATION HOUNI: Les nouvelles métriques du prof ---
 export const measurements = pgTable("measurements", {
   id: serial("id").primaryKey(),
   assetId: integer("asset_id").notNull(),
-  // 3 Courants
-  i1: doublePrecision("i1"), i2: doublePrecision("i2"), i3: doublePrecision("i3"),
-  // 3 Tensions Simples (V)
-  v1: doublePrecision("v1"), v2: doublePrecision("v2"), v3: doublePrecision("v3"),
-  // 3 Tensions Composées (U)
-  u1: doublePrecision("u1"), u2: doublePrecision("u2"), u3: doublePrecision("u3"),
-  // Metrics mel Cahier des charges
-  power: doublePrecision("power"),
-  frequency: doublePrecision("frequency"),
-  cosPhi: doublePrecision("cos_phi"),
+  
+  // Tensions Simples (en MINUSCULES entre les guillemets)
+  V1N: doublePrecision("v1n"), 
+  V2N: doublePrecision("v2n"), 
+  V3N: doublePrecision("v3n"),
+  
+  // Tensions Composées
+  V12: doublePrecision("v12"), 
+  V23: doublePrecision("v23"), 
+  V31: doublePrecision("v31"),
+  
+  // Courants
+  I1: doublePrecision("i1"), 
+  I2: doublePrecision("i2"), 
+  I3: doublePrecision("i3"),
+  
+  // Puissance, Énergies et Autres Métriques
+  TKW: doublePrecision("tkw"),   
+  IKWH: doublePrecision("ikwh"), 
+  HZ: doublePrecision("hz"),     
+  PF: doublePrecision("pf"),     
+  KVAH: doublePrecision("kvah"), 
+  
   timestamp: timestamp("timestamp").defaultNow(),
 });

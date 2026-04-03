@@ -31,9 +31,12 @@
       <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Puissance<br>Active</p>
       <div class="mb-4">
         <div class="flex items-baseline gap-2">
-          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().power }}</span>
+          <!-- MODIFICATION ICI : liveData().TKW -->
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().TKW }}</span>
           <span class="text-xs text-slate-500 font-bold">KW</span>
         </div>
+        <!-- Petit ajout optionnel pour l'énergie apparente KVAH -->
+        <span class="text-[10px] text-slate-400 font-semibold">{{ liveData().KVAH }} KVAH</span>
       </div>
       <div class="flex gap-1">
         <div *ngFor="let i of [50,55,60,65,70,75,80]" class="h-1 bg-emerald-400 rounded-full flex-1"></div>
@@ -49,7 +52,8 @@
       <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Énergie<br>Totale</p>
       <div class="mb-4">
         <div class="flex items-baseline gap-2">
-          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().i1 }}</span>
+          <!-- MODIFICATION ICI : liveData().IKWH -->
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().IKWH }}</span>
           <span class="text-xs text-slate-500 font-bold">KWH</span>
         </div>
       </div>
@@ -58,16 +62,17 @@
       </div>
     </div>
 
-    <!-- Cos Φ -->
+    <!-- Cos Φ (Power Factor) -->
     <div class="group bg-gradient-to-br from-violet-50 to-white rounded-3xl p-8 border border-violet-200 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1">
       <div class="flex items-start justify-between mb-6">
         <div class="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm">⚙️</div>
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">—</span>
       </div>
-      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Cos<br>Φ</p>
+      <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Power<br>Factor</p>
       <div class="mb-4">
         <div class="flex items-baseline gap-2">
-          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().cosPhi }}</span>
+          <!-- MODIFICATION ICI : liveData().PF -->
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().PF }}</span>
           <span class="text-xs text-slate-500 font-bold">PF</span>
         </div>
       </div>
@@ -85,7 +90,8 @@
       <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-4 leading-none">Fréquence</p>
       <div class="mb-4">
         <div class="flex items-baseline gap-2">
-          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().frequency }}</span>
+          <!-- MODIFICATION ICI : liveData().HZ -->
+          <span class="text-4xl font-black text-slate-900 leading-tight">{{ liveData().HZ }}</span>
           <span class="text-xs text-slate-500 font-bold">HZ</span>
         </div>
       </div>
@@ -118,23 +124,23 @@
       </h2>
 
       <div class="grid grid-cols-2 gap-4">
-        <!-- Simple -->
+        <!-- Simple (V1N, V2N, V3N) -->
         <div class="bg-gradient-to-br from-blue-50 to-white rounded-2xl p-6 border border-blue-100">
           <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-4">Simple</p>
           <div class="space-y-3">
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V1</span><span class="text-lg font-black text-blue-600">{{ liveData().v1 }}</span></div>
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V2</span><span class="text-lg font-black text-slate-400">{{ liveData().v2 }}</span></div>
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V3</span><span class="text-lg font-black text-slate-400">{{ liveData().v3 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V1N</span><span class="text-lg font-black text-blue-600">{{ liveData().V1N }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V2N</span><span class="text-lg font-black text-slate-400">{{ liveData().V2N }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V3N</span><span class="text-lg font-black text-slate-400">{{ liveData().V3N }}</span></div>
           </div>
         </div>
 
-        <!-- Composée -->
+        <!-- Composée (V12, V23, V31) -->
         <div class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 border border-slate-100">
           <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-4">Composée</p>
           <div class="space-y-3">
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U1</span><span class="text-lg font-black text-slate-800">{{ liveData().u1 }}</span></div>
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U2</span><span class="text-lg font-black text-slate-400">{{ liveData().u2 }}</span></div>
-            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">U3</span><span class="text-lg font-black text-slate-400">{{ liveData().u3 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V12</span><span class="text-lg font-black text-slate-800">{{ liveData().V12 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V23</span><span class="text-lg font-black text-slate-400">{{ liveData().V23 }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-[9px] font-bold text-slate-600">V31</span><span class="text-lg font-black text-slate-400">{{ liveData().V31 }}</span></div>
           </div>
         </div>
       </div>
@@ -144,7 +150,7 @@
       </div>
     </div>
 
-    <!-- Courants -->
+    <!-- Courants (I1, I2, I3) -->
     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-md transition-all">
       <h2 class="text-lg font-black text-slate-900 mb-8 flex items-center gap-2">
         <span class="text-2xl">🔌</span>
@@ -154,7 +160,7 @@
       <div class="space-y-5">
         <!-- I1 -->
         <div>
-          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I1</span><span class="text-sm font-black text-slate-900">{{ liveData().i1 }}</span></div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I1</span><span class="text-sm font-black text-slate-900">{{ liveData().I1 }}</span></div>
           <div class="h-3 bg-blue-100 rounded-full overflow-hidden border border-blue-200">
             <div class="h-full bg-gradient-to-r from-blue-500 to-blue-600" [style.width.%]="89"></div>
           </div>
@@ -162,7 +168,7 @@
 
         <!-- I2 -->
         <div>
-          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I2</span><span class="text-sm font-black text-slate-900">{{ liveData().i2 }}</span></div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I2</span><span class="text-sm font-black text-slate-900">{{ liveData().I2 }}</span></div>
           <div class="h-3 bg-green-100 rounded-full overflow-hidden border border-green-200">
             <div class="h-full bg-gradient-to-r from-green-500 to-green-600" [style.width.%]="79"></div>
           </div>
@@ -170,7 +176,7 @@
 
         <!-- I3 -->
         <div>
-          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I3</span><span class="text-sm font-black text-slate-900">{{ liveData().i3 }}</span></div>
+          <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-black text-slate-700 uppercase tracking-wide">I3</span><span class="text-sm font-black text-slate-900">{{ liveData().I3 }}</span></div>
           <div class="h-3 bg-purple-100 rounded-full overflow-hidden border border-purple-200">
             <div class="h-full bg-gradient-to-r from-purple-500 to-purple-600" [style.width.%]="89"></div>
           </div>

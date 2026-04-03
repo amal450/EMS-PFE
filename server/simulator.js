@@ -1,44 +1,51 @@
-// simulator.js - المحاكي الصناعي المتقدم
-// يوضع في مجلد server
-
+// simulator.js - Version corrigée pour correspondre au schéma
 const API_URL = 'http://localhost:3000/measurements';
 
-// IDs المعدات من Drizzle Studio
-const devices = [11, 13]; 
+// IDs des équipements
+const devices = [11, 13, 1, 2, 9, 10, 18, 19, 20]; // Ajoutez tous vos IDs
 
 console.log("🚀 [EMS VOLT] Simulateur Industriel Démarré...");
 
 function generateData(id) {
-  // تيار بين 12A و 18A لكل فاز
-  const i1 = Number((12 + Math.random() * 6).toFixed(2));
-  const i2 = Number((12 + Math.random() * 6).toFixed(2));
-  const i3 = Number((12 + Math.random() * 6).toFixed(2));
+  // Tensions simples (V-N) autour de 230V
+  const V1N = Number((228 + Math.random() * 6).toFixed(1));
+  const V2N = Number((228 + Math.random() * 6).toFixed(1));
+  const V3N = Number((228 + Math.random() * 6).toFixed(1));
 
-  // توتر بسيط (V-N) حول 230V
-  const v1 = Number((228 + Math.random() * 6).toFixed(1));
-  const v2 = Number((228 + Math.random() * 6).toFixed(1));
-  const v3 = Number((228 + Math.random() * 6).toFixed(1));
+  // Tensions composées (V-V) autour de 400V
+  const V12 = Number((398 + Math.random() * 10).toFixed(1));
+  const V23 = Number((398 + Math.random() * 10).toFixed(1));
+  const V31 = Number((398 + Math.random() * 10).toFixed(1));
 
-  // توتر مركب (V-V) حول 400V
-  const u1 = Number((398 + Math.random() * 10).toFixed(1));
-  const u2 = Number((398 + Math.random() * 10).toFixed(1));
-  const u3 = Number((398 + Math.random() * 10).toFixed(1));
+  // Courants entre 12A et 18A
+  const I1 = Number((12 + Math.random() * 6).toFixed(2));
+  const I2 = Number((12 + Math.random() * 6).toFixed(2));
+  const I3 = Number((12 + Math.random() * 6).toFixed(2));
 
-  // تردد (Hz) وعامل قدرة (Cos Phi)
-  const frequency = Number((49.98 + Math.random() * 0.04).toFixed(2));
-  const cosPhi = Number((0.91 + Math.random() * 0.05).toFixed(2));
+  // Fréquence et facteur puissance
+  const HZ = Number((49.98 + Math.random() * 0.04).toFixed(2));
+  const PF = Number((0.91 + Math.random() * 0.05).toFixed(2));
 
-  // حساب القدرة الإجمالية تقريبياً (kW)
-  const power = Number(((v1 * i1 + v2 * i2 + v3 * i3) / 1000).toFixed(2));
+  // Puissance totale (kW)
+  const TKW = Number(((V1N * I1 + V2N * I2 + V3N * I3) / 1000).toFixed(2));
+  
+  // Énergie apparente (kVAh)
+  const KVAH = Number((TKW / PF).toFixed(2));
+  
+  // Énergie active (kWh) - valeur aléatoire
+  const IKWH = Number((Math.random() * 100).toFixed(2));
 
+  // Retourner les données avec les MAJUSCULES comme dans le schéma
   return {
     assetId: id,
-    i1, i2, i3,
-    v1, v2, v3,
-    u1, u2, u3,
-    power,
-    frequency,
-    cosPhi
+    V1N, V2N, V3N,
+    V12, V23, V31,
+    I1, I2, I3,
+    TKW,
+    IKWH,
+    HZ,
+    PF,
+    KVAH
   };
 }
 
@@ -47,14 +54,21 @@ setInterval(async () => {
   for (let id of devices) {
     const data = generateData(id);
     try {
-      await fetch(API_URL, {
+      const response = await fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      console.log(`✅ [Device ${id}]: ${data.power} kW Pushed`);
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`✅ [Device ${id}]: ${data.TKW} kW | ${data.PF} PF | ${data.HZ} Hz`);
+      } else {
+        const error = await response.text();
+        console.log(`⚠️ [Device ${id}]: HTTP ${response.status} - ${error}`);
+      }
     } catch (e) {
-      console.log("❌ NestJS Offline");
+      console.log("❌ Erreur connexion:", e.message);
     }
   }
 }, 2000);

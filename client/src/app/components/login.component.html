@@ -1,113 +1,108 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-4 relative overflow-hidden">
-  <!-- Animated Background Elements -->
-  <div class="absolute inset-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse"></div>
-    <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-white opacity-10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-  </div>
+<!-- J'ai ajouté overflow-hidden pour empêcher tout scroll -->
+<div class="parallax-container h-screen w-full bg-white flex flex-col font-sans selection:bg-sky-100 overflow-hidden">
 
-  <!-- Login Card -->
-  <div class="relative z-10 w-full max-w-md">
-    <!-- Logo -->
-    <div class="text-center mb-8 animate-in fade-in slide-in-from-top duration-700">
-      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-lg mb-4">
-        <span class="text-3xl">⚡</span>
-      </div>
-      <h1 class="text-3xl font-black text-white tracking-tight">EMS</h1>
-      <p class="text-blue-100 text-sm mt-1">Energy Management System</p>
+  <!-- L'ancien HEADER a été supprimé comme demandé -->
+
+  <!-- MAIN -->
+  <main class="flex-1 relative flex flex-col h-full">
+
+    <!-- Background (Rendu totalement fixe) -->
+    <div class="absolute inset-0 z-0">
+      <!-- J'ai supprimé la classe parallax-bg pour éviter les mouvements/scrolls -->
+      <img src="assets/industrial-bg.png" alt="background" class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/60 to-transparent"></div>
     </div>
 
-    <!-- Card -->
-    <div class="bg-white rounded-3xl shadow-2xl p-8 animate-in fade-in slide-in-from-bottom duration-700">
-      <!-- Tabs -->
-      <div class="flex gap-2 mb-8 bg-gray-100 rounded-xl p-1">
-        <button
-          (click)="toggleMode()"
-          [class.bg-white]="!isRegisterMode()"
-          [class.shadow]="!isRegisterMode()"
-          class="flex-1 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
-          [ngClass]="!isRegisterMode() ? 'text-blue-600' : 'text-gray-600'"
-        >
-          Connexion
-        </button>
-        
+    <!-- LOGO DÉPLACÉ ICI (En haut à gauche, au-dessus du fond sombre) -->
+    <div class="absolute top-6 left-6 lg:top-10 lg:left-12 z-50 flex items-center gap-3">
+      <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center shadow-lg">
+        <span class="text-white text-xl">⚡</span>
       </div>
-
-      <!-- Form -->
-      <form (ngSubmit)="isRegisterMode() ? register() : login()" class="space-y-4">
-        <!-- Register Name (Conditional) -->
-        <div *ngIf="isRegisterMode()" class="animate-in fade-in duration-300">
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Nom complet</label>
-          <input
-            type="text"
-            [(ngModel)]="registerName"
-            name="name"
-            placeholder="Votre nom"
-            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-          />
-        </div>
-
-        <!-- Email -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-          <input
-            type="email"
-            [(ngModel)]="email"
-            name="email"
-            placeholder="votre@email.com"
-            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-          />
-        </div>
-
-        <!-- Password -->
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe</label>
-          <input
-            type="password"
-            [(ngModel)]="password"
-            name="password"
-            placeholder="••••••••"
-            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors"
-          />
-        </div>
-
-        <!-- Error Message -->
-        <div *ngIf="errorMessage()" class="bg-red-50 border-2 border-red-200 rounded-xl p-3 animate-in fade-in duration-300">
-          <p class="text-red-700 text-sm font-semibold">{{ errorMessage() }}</p>
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          [disabled]="isLoading()"
-          class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span *ngIf="!isLoading()">
-            {{ isRegisterMode() ? 'S\'inscrire' : 'Se connecter' }}
-          </span>
-          <span *ngIf="isLoading()" class="flex items-center justify-center gap-2">
-            <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            Chargement...
-          </span>
-        </button>
-      </form>
-
-      <!-- Demo Users (Optional) -->
-      <div class="mt-6 pt-6 border-t border-gray-200">
-        <p class="text-xs text-gray-500 text-center mb-3">Comptes de démonstration:</p>
-        <div class="space-y-2 text-xs">
-          <p class="text-gray-600">
-            <strong>Admin:</strong> admin@ems.com / password123
-          </p>
-          <p class="text-gray-600">
-            <strong>Utilisateur:</strong> user@ems.com / password123
-          </p>
-        </div>
+      <div>
+        <!-- Le texte est passé en blanc (text-white) et gris clair (text-slate-300) pour être visible sur le fond sombre -->
+        <h1 class="text-xl font-black text-white tracking-tight leading-none uppercase">EMS</h1>
+        <p class="text-[8px] font-bold text-slate-300 uppercase tracking-[0.2em]">Energy System</p>
       </div>
     </div>
 
-    <!-- Footer -->
-    <p class="text-center text-white text-xs mt-6 opacity-80">
-      © 2026 EMS - Système de Gestion d'Énergie. Tous droits réservés.
-    </p>
-  </div>
+    <!-- Contenu principal -->
+    <div class="relative z-10 flex-1 flex flex-col lg:flex-row items-center px-8 lg:px-24 py-12 lg:py-0 w-full h-full">
+
+      <!-- LEFT TEXT -->
+      <div class="flex-1 text-white space-y-8 mb-12 lg:mb-0 lg:pr-12 mt-16 lg:mt-0">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-sky-500/20 backdrop-blur-md border border-sky-500/30 rounded-full text-sky-400 text-xs font-bold uppercase tracking-widest">
+          <span class="flex h-2 w-2 rounded-full bg-sky-400 animate-pulse"></span>
+          Monitoring Industriel 4.0
+        </div>
+
+        <h2 class="text-5xl lg:text-7xl font-black tracking-tight leading-[1.1]">
+          Optimisez votre
+          <br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-pink-500">
+            Énergie
+          </span>
+          en temps réel.
+        </h2>
+
+        <p class="text-lg text-slate-300 max-w-xl leading-relaxed">
+          Connectez-vous à la plateforme EMS la plus avancée. Visualisez, analysez et contrôlez vos actifs industriels en un clic.
+        </p>
+      </div>
+
+      <!-- CARD -->
+      <div class="w-full max-w-[480px]">
+        <div class="glass-card p-10 lg:p-12">
+
+          <div class="mb-10">
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Accès Client</h3>
+            <p class="text-slate-500 text-sm mt-2">Veuillez entrer vos identifiants pour continuer.</p>
+          </div>
+
+          <!-- FORM -->
+          <form (ngSubmit)="login()" class="space-y-6">
+            <div class="space-y-2">
+              <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Professionnel</label>
+              <input
+                type="email"
+                [(ngModel)]="email"
+                name="email"
+                placeholder="email@ems-system.com"
+                class="input-premium"
+              />
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex justify-between items-center px-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Mot de passe</label>
+              </div>
+              <input
+                type="password"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="••••••••"
+                class="input-premium"
+              />
+            </div>
+
+            <!-- Affichage erreur -->
+            <div *ngIf="errorMessage()" class="error-box text-red-500 text-xs flex items-center gap-1">
+              <span></span> {{ errorMessage() }}
+            </div>
+
+            <!-- Bouton connexion -->
+            <button
+              type="submit"
+              [disabled]="isLoading()"
+              class="submit-btn w-full flex justify-center items-center gap-2"
+            >
+              <span *ngIf="!isLoading()">Se connecter au Dashboard →</span>
+              <div *ngIf="isLoading()" class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
 </div>

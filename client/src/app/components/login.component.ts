@@ -34,7 +34,8 @@ export class LoginComponent {
     this.authService.login(this.email(), this.password()).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        // 🔹 Utilisation de replaceUrl pour empêcher le retour arrière vers login
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
       },
       error: (error) => {
         this.isLoading.set(false);
@@ -57,7 +58,8 @@ export class LoginComponent {
     this.authService.register(this.email(), this.registerName(), this.password()).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/dashboard']);
+        // 🔹 Même chose pour l'inscription
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
       },
       error: (error) => {
         this.isLoading.set(false);

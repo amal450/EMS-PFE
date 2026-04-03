@@ -15,7 +15,7 @@ export class AuthGuardService {
     if (this.authService.isAuthenticated()) {
       return true;
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { replaceUrl: true });
       return false;
     }
   }
