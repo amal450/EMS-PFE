@@ -5,7 +5,7 @@ import { DashboardComponent } from './components/dashboard.component';
 import { UserManagementComponent } from './components/user-management.component';
 import { AuthGuard } from './guards/auth.guard';
 import { ProfileComponent } from './components/profile.component';
-
+import { HierarchyComponent } from './components/hierarchy.component';
 export const routes: Routes = [
   // Racine redirige vers login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -21,6 +21,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'users', component: UserManagementComponent },
+      { path: 'hierarchy', component: HierarchyComponent, canActivate: [AuthGuard] },
       { path: 'profile', component: ProfileComponent },
       // Supprime cette ligne { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
