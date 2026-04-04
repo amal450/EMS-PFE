@@ -31,3 +31,17 @@ Ki t-ji bech t-sakkar: A3mil git add . -> git commit -> git push. (Bech hiya t-n
 
 ----
 plantUML
+
+Frontend Angular
+?
+HTTP GET
+?
+Backend NestJS
+?
+Base données / simulateur
+?
+Retour mesures
+?
+Signal Angular
+?
+UI live

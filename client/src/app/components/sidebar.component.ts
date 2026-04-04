@@ -158,4 +158,15 @@ export class SidebarComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+  showLogoutModal = signal(false);
+  confirmLogout() {
+    this.showLogoutModal.set(false);
+    this.logout();
+  }
+  activeButton: string = 'overview';
+
+  setActive(button: string) {
+   this.activeButton = button;
+  }
+  
 }
