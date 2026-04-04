@@ -168,5 +168,15 @@ export class SidebarComponent implements OnInit {
   setActive(button: string) {
    this.activeButton = button;
   }
+  getAddButtonLabel(type: string): string {
+  switch(type) {
+    case 'SITE': return 'Ajouter site';
+    case 'TGBT': return 'Ajouter TGBT';
+    case 'ARMOIRE': return 'Ajouter armoire';
+    case 'LIGNE': return 'Ajouter ligne';
+    case 'EQUIPEMENT': return 'Ajouter équipement';
+    default: return 'Ajouter asset';
+  }
+}
   
 }
