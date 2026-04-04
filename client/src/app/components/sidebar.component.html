@@ -67,7 +67,6 @@
            {{ site.name }}
         </span>
         <div *ngIf="authService.isAdmin()" class="hidden group-hover:flex gap-2">
-          <!-- ⚠️ Changement ici : 'TABLEAU' → 'TGBT' -->
           <button (click)="openAdd(site,'TGBT')" class="text-slate-400 hover:text-white">➕</button>
           <button (click)="openEdit(site)" class="text-slate-400 hover:text-white">✏️</button>
           <button (click)="askDelete(site.id)" class="text-red-400 hover:text-red-300">🗑️</button>
@@ -172,31 +171,32 @@
     </div>
   </div>
 
-<!-- Modal Ajouter / Modifier Asset -->
-<div *ngIf="showAssetModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
-  <div class="bg-white p-6 rounded-3xl w-80 shadow-2xl text-center">
+  <!-- Modal Ajouter / Modifier Asset -->
+  <div *ngIf="showAssetModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-3xl w-80 shadow-2xl text-center">
 
-    <h2 class="text-xl font-bold text-slate-900 mb-4">
-      {{ isEditAssetMode() ? 'Modifier' : getAddButtonLabel(assetForm().type) }}
-    </h2>
+      <h2 class="text-xl font-bold text-slate-900 mb-4">
+        {{ isEditAssetMode() ? 'Modifier' : getAddButtonLabel(assetForm().type) }}
+      </h2>
 
-    <input type="text" [(ngModel)]="assetForm().name"
-       placeholder="Nom"
-       class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4 text-black">
+      <!-- 🔹 Changement ici : texte noir pour être visible -->
+      <input type="text" [(ngModel)]="assetForm().name"
+         placeholder="Nom"
+         class="w-full p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4 text-black">
 
-    <div class="flex gap-3">
-      <button (click)="showAssetModal.set(false)"
-              class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors">
-        Annuler
-      </button>
+      <div class="flex gap-3">
+        <button (click)="showAssetModal.set(false)"
+                class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors">
+          Annuler
+        </button>
 
-      <button (click)="saveAsset()"
-              class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/30">
-        {{ isEditAssetMode() ? 'Modifier' : 'Ajouter' }}
-      </button>
+        <button (click)="saveAsset()"
+                class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/30">
+          {{ isEditAssetMode() ? 'Modifier' : 'Ajouter' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
 
   <!-- Modal Suppression Asset -->
   <div *ngIf="showDeleteAssetModal()" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm">
@@ -211,4 +211,5 @@
       </div>
     </div>
   </div>
+
 </aside>
